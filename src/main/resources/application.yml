@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: kafu
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kafu
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-app-specific-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+keycloak:
+  auth-server-url: http://localhost:9098
+  realm: kafu-realm
+  client-id: kafu-client
+  client-secret: BbDYtfxCKR5ZVkqs9JK5tYRvBo5EwAcs
+
+jwt:
+  auth:
+    converter:
+      resource-id: kafu-realm
+      principle-attribute: preferred_username
+
+# Keycloak Configuration
+#  spring.security.oauth2.client.registration.keycloak.client-id=springboot-app
+#  spring.security.oauth2.client.registration.keycloak.client-secret=YOUR_CLIENT_SECRET
+#  spring.security.oauth2.client.registration.keycloak.authorization-grant-type=authorization_code
+#  spring.security.oauth2.client.registration.keycloak.scope=openid,profile
+#
+#  spring.security.oauth2.client.provider.keycloak.issuer-uri=http://localhost:8080/realms/myrealm

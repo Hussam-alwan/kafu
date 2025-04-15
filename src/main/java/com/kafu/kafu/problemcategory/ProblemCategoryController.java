@@ -1,0 +1,57 @@
+package com.kafu.kafu.problemcategory;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/problem-categories")
+@RequiredArgsConstructor
+public class ProblemCategoryController {
+    private final ProblemCategoryService problemCategoryService;
+
+    @GetMapping
+    public ResponseEntity<Page<ProblemCategoryDTO>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(problemCategoryService.findAll(pageable));
+    }
+
+    @GetMapping("/by-gov/{govId}")
+    public ResponseEntity<List<ProblemCategoryDTO>> findByGovId(@PathVariable Long govId) {
+        return ResponseEntity.ok(problemCategoryService.findByGovId(govId));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProblemCategoryDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(problemCategoryService.findById(id));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProblemCategoryDTO> create(@Valid @RequestBody ProblemCategoryDTO problemCategoryDTO) {
+        ProblemCategoryDTO created = problemCategoryService.create(problemCategoryDTO);
+        return ResponseEntity
+                .created(URI.create("/api/v1/problem-categories/" + created.getId()))
+                .body(created);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProblemCategoryDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody ProblemCategoryDTO problemCategoryDTO) {
+        return ResponseEntity.ok(problemCategoryService.update(id, problemCategoryDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        problemCategoryService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}

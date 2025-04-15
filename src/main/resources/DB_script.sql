@@ -1,0 +1,131 @@
+-- 1. Address Table
+CREATE TABLE Address (
+    id bigint PRIMARY KEY,
+    latitude DECIMAL(9, 6) NOT NULL,
+    longitude DECIMAL(9, 6) NOT NULL,
+    description varchar(255) NOT NULL,
+    city VARCHAR(50) NOT NULL
+);
+
+-- 2. User Table
+CREATE TABLE Users (
+    id bigint PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+	date_of_birth DATE,
+    college_degree VARCHAR(100),
+    occupation VARCHAR(50),
+    cv_url VARCHAR(255),
+    photo_url VARCHAR(255),
+    description TEXT,
+    address_id bigint,
+    FOREIGN KEY (address_id) REFERENCES Address(id)
+);
+
+-- 3. Gov Table (Government Entity)
+CREATE TABLE Gov (
+    id bigint PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    logo_url VARCHAR(255),
+    address_id bigint NOT NULL,
+	phone varchar(20),
+    user_id bigint NOT NULL,
+    FOREIGN KEY (address_id) REFERENCES Address(id),
+    FOREIGN KEY (user_id) REFERENCES Users(id)
+);
+
+-- 4. ProblemCategory Table
+CREATE TABLE Problem_Category (
+    category_id bigint PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    gov_id bigint NOT NULL,
+    FOREIGN KEY (gov_id) REFERENCES Gov(id)
+);
+
+-- 5. Problem Table
+CREATE TABLE Problem (
+    id bigint PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    is_real BOOLEAN NOT NULL DEFAULT FALSE,
+    for_contribution BOOLEAN NOT NULL DEFAULT FALSE,
+    for_donation BOOLEAN NOT NULL DEFAULT FALSE,
+    submission_date TIMESTAMP  NOT NULL,
+    submitted_by bigint NOT NULL,
+    approved_by bigint,
+    address_id bigint NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'in_progress', 'resolved')),
+    FOREIGN KEY (submitted_by) REFERENCES Users(id),
+    FOREIGN KEY (approved_by) REFERENCES Gov(id),
+    FOREIGN KEY (address_id) REFERENCES Address(id)
+);
+
+-- 6. ProblemPhoto Table
+CREATE TABLE Problem_Photo (
+    id bigint PRIMARY KEY,
+    problem_id bigint NOT NULL,
+    photo_url VARCHAR(255) NOT NULL,
+    photo_date TIMESTAMP NOT NULL,
+    FOREIGN KEY (problem_id) REFERENCES Problem(id)
+);
+
+-- 7. Solution Table
+CREATE TABLE Solution (
+    id bigint PRIMARY KEY,
+    description TEXT NOT NULL,
+    estimated_cost DECIMAL(12, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected')),
+    accepted_reason TEXT,
+    start_date DATE,
+    completion_date DATE,
+    feedback TEXT,
+    rating INT CHECK (rating BETWEEN 1 AND 10),
+    problem_id bigint NOT NULL,
+    proposed_by bigint NOT NULL,
+    accepted_by bigint,
+    FOREIGN KEY (problem_id) REFERENCES Problem(id),
+    FOREIGN KEY (proposed_by) REFERENCES Users(id),
+    FOREIGN KEY (accepted_by) REFERENCES Gov(id)
+);
+
+-- 8. Donation Table
+CREATE TABLE Donation (
+    id bigint PRIMARY KEY,
+    problem_id bigint NOT NULL,
+    donor_id bigint NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL,
+    fee DECIMAL(12, 2) NOT NULL,
+    net_amount DECIMAL(12, 2) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+    payment_method VARCHAR(20) NOT NULL,
+    payment_transaction_id VARCHAR(255),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'succeeded', 'failed', 'requires_action')),
+    is_anonymous BOOLEAN NOT NULL DEFAULT FALSE,
+    donation_date TIMESTAMP NOT NULL,
+    FOREIGN KEY (problem_id) REFERENCES Problem(id),
+    FOREIGN KEY (donor_id) REFERENCES Users(id)
+);
+
+-- 9. ProblemProgress Table
+CREATE TABLE Problem_Progress (
+    id bigint PRIMARY KEY,
+    percentage INT NOT NULL CHECK (percentage BETWEEN 0 AND 100),
+    comment TEXT NOT NULL,
+    progress_date TIMESTAMP NOT NULL,
+    problem_id INT NOT NULL,
+    solution_id INT NOT NULL,
+    FOREIGN KEY (problem_id) REFERENCES Problem(id),
+    FOREIGN KEY (solution_id) REFERENCES Solution(id)
+);
+
+create sequence address_seq start with 1 increment by 50;
+create sequence donation_seq start with 1 increment by 50;
+create sequence gov_seq start with 1 increment by 50;
+create sequence problem_category_seq start with 1 increment by 50;
+create sequence problem_photo_seq start with 1 increment by 50;
+create sequence problem_seq start with 1 increment by 50;
+create sequence solution_seq start with 1 increment by 50;
+create sequence users_seq start with 1 increment by 50;

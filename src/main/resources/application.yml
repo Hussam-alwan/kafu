@@ -8,8 +8,8 @@ spring:
           issuer-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}
   datasource:
     url: jdbc:postgresql://localhost:5432/kafu
-    username: postgres
-    password: postgres
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -19,17 +19,17 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: your-email@gmail.com
-    password: your-app-specific-password
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: your-email@gmail.com
+#    password: your-app-specific-password
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
 
 server:
   port: 8080

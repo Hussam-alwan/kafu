@@ -6,9 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DonationService {
+    private static final BigDecimal FEE_PERCENTAGE = new BigDecimal("0.01"); // 1%
+    
     private final DonationRepository donationRepository;
     private final DonationMapper donationMapper;
     private final ProblemService problemService;
@@ -60,17 +67,44 @@ public class DonationService {
         // Verify that the problem exists
         problemService.findById(donationDTO.getProblemId());
 
-        // Verify that the donor exists
-        userService.findById(donationDTO.getDonorId());
-
-        // Set donation date if not provided
-        if (donationDTO.getDonationDate() == null) {
-            donationDTO.setDonationDate(LocalDateTime.now());
+        // Set donor ID from security context or null for anonymous
+        Long donor = getCurrentUserId();
+        if(donor == null)
+        {
+            throw new RuntimeException("no user provided");
         }
+        donationDTO.setDonorId(donor);
 
+        // Calculate fee and net amount
+        BigDecimal amount = donationDTO.getAmount();
+        BigDecimal fee = amount.multiply(FEE_PERCENTAGE).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal netAmount = amount.subtract(fee);
+        
+        donationDTO.setFee(fee);
+        donationDTO.setNetAmount(netAmount);
+
+        // Set donation date
+        donationDTO.setDonationDate(LocalDateTime.now());
+        
         Donation donation = donationMapper.toEntity(donationDTO);
         donation = donationRepository.save(donation);
         return donationMapper.toDTO(donation);
+    }
+
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            if (authentication.getPrincipal() instanceof Jwt jwt) {
+                try {
+                    // Get the user ID from the "sub" claim of the JWT token
+                    String sub = jwt.getSubject();
+                    return Long.parseLong(sub);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
     @Transactional

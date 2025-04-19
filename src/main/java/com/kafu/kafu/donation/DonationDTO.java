@@ -20,23 +20,18 @@ public class DonationDTO {
     @Positive(message = "Amount must be positive")
     private BigDecimal amount;
 
-    @NotNull(message = "Fee is required")
-    @Positive(message = "Fee must be positive")
     private BigDecimal fee;
 
-    @NotNull(message = "Net amount is required")
-    @Positive(message = "Net amount must be positive")
     private BigDecimal netAmount;
 
     @NotNull(message = "Currency is required")
     private String currency = "USD";
 
     @NotNull(message = "Payment method is required")
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
 
     private String paymentTransactionId;
 
-    @NotNull(message = "Status is required")
     private DonationStatus status;
 
     private Boolean isAnonymous = false;

@@ -36,9 +36,10 @@ public class Donation {
     private String currency = "USD";
 
     @Column(name = "payment_method", nullable = false, length = 20)
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
-    @Column(name = "payment_transaction_id", length = 255)
+    @Column(name = "payment_transaction_id")
     private String paymentTransactionId;
 
     @Column(nullable = false, length = 20)

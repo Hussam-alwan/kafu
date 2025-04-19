@@ -1,6 +1,7 @@
 package com.kafu.kafu.user;
 
 import com.kafu.kafu.address.Address;
+import com.kafu.kafu.gov.Gov;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -12,6 +13,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+//    private String keycloakId;
 
     @Column(nullable = false, length = 50)
     private String firstName;
@@ -37,7 +40,11 @@ public class User {
     private String photoUrl;
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gov_id")
+    private Gov gov;
 }

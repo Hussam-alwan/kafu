@@ -1,5 +1,6 @@
 package com.kafu.kafu.user;
 
+import com.kafu.kafu.address.AddressDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -38,5 +39,6 @@ public class UserDTO {
     private String cvUrl;
     private String photoUrl;
     private String description;
-    private Long addressId;
+    private AddressDTO address;
+    private Long govId;
 }

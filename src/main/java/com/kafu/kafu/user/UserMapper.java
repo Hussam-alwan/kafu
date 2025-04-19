@@ -1,5 +1,6 @@
 package com.kafu.kafu.user;
 
+import com.kafu.kafu.address.AddressMapper;
 import com.kafu.kafu.address.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
+    private final AddressMapper addressMapper;
     private final AddressService addressService;
 
     public UserDTO toDTO(User entity) {
@@ -26,7 +28,8 @@ public class UserMapper {
         dto.setCvUrl(entity.getCvUrl());
         dto.setPhotoUrl(entity.getPhotoUrl());
         dto.setDescription(entity.getDescription());
-        dto.setAddressId(entity.getAddress() != null ? entity.getAddress().getId() : null);
+        dto.setAddress(addressMapper.toDTO(entity.getAddress()));
+        dto.setGovId(entity.getGov() != null ? entity.getGov().getId() : null);
         return dto;
     }
 
@@ -75,8 +78,8 @@ public class UserMapper {
         if (dto.getDescription() != null) {
             entity.setDescription(dto.getDescription());
         }
-        if (dto.getAddressId() != null) {
-            entity.setAddress(addressService.getAddressEntity(dto.getAddressId()));
+        if (dto.getAddress() != null) {
+            entity.setAddress(addressMapper.toEntity(dto.getAddress()));
         }
     }
 }

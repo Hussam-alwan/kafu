@@ -56,10 +56,14 @@ services:
       postgresql:
         condition: service_healthy
 
+    volumes:
+      - keycloak:/opt/keycloak/data
+
 
 volumes:
   postgres:
   pgadmin:
+  keycloak:
 
 networks:
   kafu-network:

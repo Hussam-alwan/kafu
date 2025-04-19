@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/solutions")
+@RequestMapping("/api/v1/solutions")
 @RequiredArgsConstructor
 public class SolutionController {
     private final SolutionService solutionService;

@@ -1,5 +1,6 @@
 package com.kafu.kafu.solution;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import java.math.BigDecimal;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SolutionDTO {
     private Long id;
 
@@ -16,7 +18,6 @@ public class SolutionDTO {
     @NotNull(message = "Estimated cost is required")
     private BigDecimal estimatedCost;
 
-    @NotNull(message = "Status is required")
     private SolutionStatus status;
 
     private String acceptedReason;
@@ -28,8 +29,7 @@ public class SolutionDTO {
     @NotNull(message = "Problem ID is required")
     private Long problemId;
 
-    @NotNull(message = "Proposed by user ID is required")
     private Long proposedById;
 
-    private Long acceptedById;
+    private Long acceptedByGovId;
 }

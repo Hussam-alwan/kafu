@@ -51,5 +51,5 @@ public class Solution {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accepted_by")
-    private Gov acceptedBy;
+    private Gov acceptedByGovId;
 }

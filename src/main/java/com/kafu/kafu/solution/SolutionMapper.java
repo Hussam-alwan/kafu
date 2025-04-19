@@ -30,7 +30,7 @@ public class SolutionMapper {
         dto.setRating(entity.getRating());
         dto.setProblemId(entity.getProblem().getId());
         dto.setProposedById(entity.getProposedBy().getId());
-        dto.setAcceptedById(entity.getAcceptedBy() != null ? entity.getAcceptedBy().getId() : null);
+        dto.setAcceptedByGovId(entity.getAcceptedByGovId() != null ? entity.getAcceptedByGovId().getId() : null);
         return dto;
     }
 
@@ -79,8 +79,8 @@ public class SolutionMapper {
         if (dto.getProposedById() != null) {
             entity.setProposedBy(userService.getUserEntity(dto.getProposedById()));
         }
-        if (dto.getAcceptedById() != null) {
-            entity.setAcceptedBy(govService.getGovEntity(dto.getAcceptedById()));
+        if (dto.getAcceptedByGovId() != null) {
+            entity.setAcceptedByGovId(govService.getGovEntity(dto.getAcceptedByGovId()));
         }
     }
 }

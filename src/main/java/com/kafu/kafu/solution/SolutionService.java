@@ -31,21 +31,21 @@ public class SolutionService {
         return solutionRepository.findByProblemId(problemId)
                 .stream()
                 .map(solutionMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<SolutionDTO> findByProposedById(Long userId) {
         return solutionRepository.findByProposedById(userId)
                 .stream()
                 .map(solutionMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<SolutionDTO> findByAcceptedById(Long govId) {
         return solutionRepository.findByAcceptedById(govId)
                 .stream()
                 .map(solutionMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public SolutionDTO findById(Long id) {
@@ -72,11 +72,12 @@ public class SolutionService {
         userService.findById(solutionDTO.getProposedById());
 
         // Verify that the accepting gov exists if provided
-        if (solutionDTO.getAcceptedById() != null) {
-            govService.findById(solutionDTO.getAcceptedById());
+        if (solutionDTO.getAcceptedByGovId() != null) {
+            govService.findById(solutionDTO.getAcceptedByGovId());
         }
 
         Solution solution = solutionMapper.toEntity(solutionDTO);
+        solution.setStatus(SolutionStatus.PENDING_APPROVAL);
         solution = solutionRepository.save(solution);
         return solutionMapper.toDTO(solution);
     }
@@ -97,8 +98,8 @@ public class SolutionService {
         }
 
         // Verify that the accepting gov exists if it's being updated
-        if (solutionDTO.getAcceptedById() != null) {
-            govService.findById(solutionDTO.getAcceptedById());
+        if (solutionDTO.getAcceptedByGovId() != null) {
+            govService.findById(solutionDTO.getAcceptedByGovId());
         }
 
         solutionMapper.updateEntity(solution, solutionDTO);

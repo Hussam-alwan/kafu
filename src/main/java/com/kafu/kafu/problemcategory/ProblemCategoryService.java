@@ -30,9 +30,8 @@ public class ProblemCategoryService {
                 .collect(Collectors.toList());
     }
 
-    public ProblemCategoryDTO findById(Long id) {
+    public ProblemCategory findById(Long id) {
         return problemCategoryRepository.findById(id)
-                .map(problemCategoryMapper::toDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem category not found"));
     }
 

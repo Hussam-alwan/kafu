@@ -2,6 +2,7 @@ package com.kafu.kafu.problem;
 
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.gov.Gov;
+import com.kafu.kafu.problemcategory.ProblemCategory;
 import com.kafu.kafu.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -33,19 +34,29 @@ public class Problem {
     @Column(name = "submission_date", nullable = false)
     private LocalDateTime submissionDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "submitted_by", nullable = false)
-    private User submittedBy;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "approved_by")
-    private Gov approvedBy;
-
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    @Column(nullable = false, length = 20)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "submitted_by_user_id", nullable = false)
+    private User submittedByUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by_gov_id")
+    private Gov approvedByGov;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private ProblemCategory category;
+
+    private LocalDateTime submittedAt;
+    private LocalDateTime approvedAt;
+    private LocalDateTime rejectedAt;
+    private LocalDateTime resolvedAt;
+    private String rejectionReason;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ProblemStatus status;
 }

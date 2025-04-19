@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProblemCategoryController {
     private final ProblemCategoryService problemCategoryService;
+    private final ProblemCategoryMapper problemCategoryMapper;
 
     @GetMapping
     public ResponseEntity<Page<ProblemCategoryDTO>> findAll(Pageable pageable) {
@@ -28,7 +29,8 @@ public class ProblemCategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProblemCategoryDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(problemCategoryService.findById(id));
+        ProblemCategory problemCategory = problemCategoryService.findById(id);
+        return ResponseEntity.ok(problemCategoryMapper.toDTO(problemCategory));
     }
 
     @PostMapping

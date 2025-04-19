@@ -53,4 +53,10 @@ public class GovController {
         govService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{govId}/associate-user/{userId}")
+    public ResponseEntity<Void> associateUser(@PathVariable Long govId, @PathVariable Long userId) {
+        govService.associateUser(govId, userId);
+        return ResponseEntity.ok().build();
+    }
 }

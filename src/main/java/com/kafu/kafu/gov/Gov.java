@@ -1,7 +1,6 @@
 package com.kafu.kafu.gov;
 
 import com.kafu.kafu.address.Address;
-import com.kafu.kafu.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,7 +28,7 @@ public class Gov {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_gov_id")
+    private Gov parentGov;
 }

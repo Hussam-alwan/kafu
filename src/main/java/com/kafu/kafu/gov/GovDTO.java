@@ -23,7 +23,9 @@ public class GovDTO {
     @Size(max = 20, message = "Phone cannot exceed 20 characters")
     private String phone;
 
-    private String photoUrl;
-    
-    private Long addressId;
+    private String logoUrl;
+
+    private AddressDTO address;
+
+    private Long parentGovId;
 }

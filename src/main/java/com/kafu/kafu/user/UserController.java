@@ -14,34 +14,37 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(userService.findAll(pageable));
+        return ResponseEntity.ok(userService.findAll(pageable).map(UserMapper::toDTO));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+//    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
+        return ResponseEntity.ok(UserMapper.toDTO(userService.findById(id)));
     }
 
-    @GetMapping("/by-email/{email}")
-    @PreAuthorize("hasRole('ADMIN') or #email == authentication.principal.username")
-    public ResponseEntity<UserDTO> findByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(userService.findByEmail(email));
-    }
+    // this endpoint will not be needed as sign up will be handled by keycloack
+    // and syncing users will be handled by a filter
+//    @PostMapping
+//    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO) {
+//        User user = userService.create(userDTO);
+//        return ResponseEntity.status(201).body(UserMapper.toDTO(user));
+//    }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.update(id, userDTO));
+        User user = userService.update(id, userDTO);
+        return ResponseEntity.ok(UserMapper.toDTO(user));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();

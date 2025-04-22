@@ -14,7 +14,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-//    private String keycloakId;
+    @Column(nullable = false, unique = true, length = 50)
+    private String keycloakId;
 
     @Column(nullable = false, length = 50)
     private String firstName;
@@ -40,7 +41,7 @@ public class User {
     private String photoUrl;
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 

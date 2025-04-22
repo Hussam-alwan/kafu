@@ -1,17 +1,13 @@
 package com.kafu.kafu.user;
 
-import com.kafu.kafu.address.AddressMapper;
-import com.kafu.kafu.address.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
-    private final AddressMapper addressMapper;
-    private final AddressService addressService;
 
-    public UserDTO toDTO(User entity) {
+    public static UserDTO toDTO(User entity) {
         if (entity == null) {
             return null;
         }
@@ -28,12 +24,12 @@ public class UserMapper {
         dto.setCvUrl(entity.getCvUrl());
         dto.setPhotoUrl(entity.getPhotoUrl());
         dto.setDescription(entity.getDescription());
-        dto.setAddress(addressMapper.toDTO(entity.getAddress()));
-        dto.setGovId(entity.getGov() != null ? entity.getGov().getId() : null);
+        dto.setAddressId(entity.getAddress().getId());
+        dto.setGovId(entity.getGov().getId());
         return dto;
     }
 
-    public User toEntity(UserDTO dto) {
+    public static User toEntity(UserDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -43,7 +39,7 @@ public class UserMapper {
         return entity;
     }
 
-    public void updateEntity(User entity, UserDTO dto) {
+    public static void updateEntity(User entity, UserDTO dto) {
         if (dto == null) {
             return;
         }
@@ -77,9 +73,6 @@ public class UserMapper {
         }
         if (dto.getDescription() != null) {
             entity.setDescription(dto.getDescription());
-        }
-        if (dto.getAddress() != null) {
-            entity.setAddress(addressMapper.toEntity(dto.getAddress()));
         }
     }
 }

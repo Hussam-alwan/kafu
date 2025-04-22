@@ -1,6 +1,5 @@
 package com.kafu.kafu.user;
 
-import com.kafu.kafu.address.AddressDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,6 +9,8 @@ import java.time.LocalDate;
 @Data
 public class UserDTO {
     private Long id;
+
+    private String keycloakId;
 
     @NotBlank(message = "First name is required")
     @Size(max = 50, message = "First name cannot exceed 50 characters")
@@ -39,6 +40,7 @@ public class UserDTO {
     private String cvUrl;
     private String photoUrl;
     private String description;
-    private AddressDTO address;
+    
+    private Long addressId;
     private Long govId;
 }

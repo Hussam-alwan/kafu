@@ -1,0 +1,75 @@
+package com.kafu.kafu.user;
+
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
+
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class KeycloakUserSyncFilter extends OncePerRequestFilter {
+    private final UserService userService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String token = request.getHeader("Authorization");
+        if (token == null ) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid or missing token");
+            return;
+        }
+
+        UserDTO userDTO = getUserDetails(token);
+        if(userDTO != null)
+        {
+
+            User user = userService.findByEmail(userDTO.getEmail());
+            boolean userExists = (user != null);
+
+            if (!userExists) {
+                userService.create(userDTO);
+                log.info("User registered successfully");
+            } else {
+                log.info("User already exists, skipping sync");
+            }
+
+            
+            request = new CustomHeaderRequestWrapper(request, "X-User-ID", user.getId().toString());//this contains user id in database not keycloak id
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private UserDTO getUserDetails(String token) {
+        if (token == null) return null;
+
+        try {
+            String tokenWithoutBearer = token.replace("Bearer ", "").trim();
+            SignedJWT signedJWT = SignedJWT.parse(tokenWithoutBearer);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmail(claims.getStringClaim("email"));
+            userDTO.setKeycloakId(claims.getStringClaim("sub"));
+            userDTO.setFirstName(claims.getStringClaim("given_name"));
+            userDTO.setLastName(claims.getStringClaim("family_name"));
+            return userDTO;
+        } catch (Exception e) {
+            log.error("Error parsing JWT token", e);
+            return null;
+        }
+    }
+}
+

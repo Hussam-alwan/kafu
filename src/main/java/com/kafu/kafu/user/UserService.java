@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,93 +17,85 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final AddressService addressService;
     private final GovService govService;
 
-    public Page<UserDTO> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::toDTO);
+
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
-    public UserDTO findById(Long id) {
+    public User findById(Long id) {
         return userRepository.findById(id)
-                .map(userMapper::toDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    public UserDTO findByEmail(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(userMapper::toDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-    }
-
-    public User getUserEntity(Long id) {
-        return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @Transactional
-    public UserDTO create(UserDTO userDTO) {
+    public User create(UserDTO userDTO) {
         if (userDTO.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new user cannot already have an ID");
         }
-
+        if (userDTO.getKeycloakId() == null || userDTO.getKeycloakId().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Keycloak ID is required");
+        }
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
-
-        // Save the address first if provided
-        if (userDTO.getAddress() != null) {
-            var savedAddress = addressService.create(userDTO.getAddress());
-            userDTO.setAddress(savedAddress);
+        if (userRepository.existsByKeycloakId(userDTO.getKeycloakId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Keycloak ID already exists");
         }
-
-        User user = userMapper.toEntity(userDTO);
-
+        User user = UserMapper.toEntity(userDTO);
         // Set gov if provided
         if (userDTO.getGovId() != null) {
             user.setGov(govService.getGovEntity(userDTO.getGovId()));
         }
+        // Set address if provided
+        if (userDTO.getAddressId() != null) {
+            user.setAddress(addressService.findById(userDTO.getAddressId()));
+        }
 
         user = userRepository.save(user);
-        return userMapper.toDTO(user);
+        return user;
     }
 
     @Transactional
-    public UserDTO update(Long id, UserDTO userDTO) {
+    public User update(Long id, UserDTO userDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (userDTO.getEmail() != null && !userDTO.getEmail().equals(user.getEmail()) && 
-            userRepository.existsByEmail(userDTO.getEmail())) {
+        // Extract keycloak id from security context
+        String tokenKeycloakId = getKeycloakIdFromSecurityContext();
+        if (tokenKeycloakId == null || !tokenKeycloakId.equals(user.getKeycloakId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own user");
+        }
+
+        if (userDTO.getEmail() != null &&
+                !userDTO.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(userDTO.getEmail())
+        ) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
-
-        // Update the address if provided
-        if (userDTO.getAddress() != null) {
-            var existingAddress = user.getAddress();
-            if (existingAddress != null) {
-                // Update existing address
-                userDTO.getAddress().setId(existingAddress.getId());
-                var updatedAddress = addressService.update(existingAddress.getId(), userDTO.getAddress());
-                userDTO.setAddress(updatedAddress);
-            } else {
-                // Create new address
-                var savedAddress = addressService.create(userDTO.getAddress());
-                userDTO.setAddress(savedAddress);
-            }
+        if (userDTO.getKeycloakId() != null &&
+                !userDTO.getKeycloakId().equals(user.getKeycloakId())
+        ) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Keycloak ID is wrong");
         }
-
-        userMapper.updateEntity(user, userDTO);
+        UserMapper.updateEntity(user, userDTO);
 
         // Update gov if provided
         if (userDTO.getGovId() != null) {
             user.setGov(govService.getGovEntity(userDTO.getGovId()));
         }
-
+        // Update address if provided
+        if (userDTO.getAddressId() != null) {
+            user.setAddress(addressService.findById(userDTO.getAddressId()));
+        }
         user = userRepository.save(user);
-        return userMapper.toDTO(user);
+        return user;
     }
 
     @Transactional
@@ -113,5 +108,13 @@ public class UserService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete user as it is being referenced by other entities");
         }
+    }
+
+    private String getKeycloakIdFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication != null) && (authentication.getPrincipal() instanceof Jwt jwt)) {
+            return jwt.getClaimAsString("sub");
+        }
+        return null;
     }
 }

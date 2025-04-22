@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -14,41 +18,44 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
 
-    public Page<AddressDTO> findAll(Pageable pageable) {
-        return addressRepository.findAll(pageable)
-                .map(addressMapper::toDTO);
+    public Page<Address> findAll(Pageable pageable) {
+        return addressRepository.findAll(pageable);
     }
 
-    public AddressDTO findById(Long id) {
-        return addressRepository.findById(id)
-                .map(addressMapper::toDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
-    }
-
-    public Address getAddressEntity(Long id) {
+    public Address findById(Long id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
     }
 
     @Transactional
-    public AddressDTO create(AddressDTO addressDTO) {
+    public Address create(AddressDTO addressDTO) {
         if (addressDTO.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new address cannot already have an ID");
         }
 
-        Address address = addressMapper.toEntity(addressDTO);
+        validateCity(addressDTO);
+
+        Address address = AddressMapper.toEntity(addressDTO);
         address = addressRepository.save(address);
-        return addressMapper.toDTO(address);
+        return address;
     }
 
     @Transactional
-    public AddressDTO update(Long id, AddressDTO addressDTO) {
+    public Address update(Long id, AddressDTO addressDTO) {
         Address address = addressRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
 
-        addressMapper.updateEntity(address, addressDTO);
+        validateCity(addressDTO);
+
+        AddressMapper.updateEntity(address, addressDTO);
         address = addressRepository.save(address);
-        return addressMapper.toDTO(address);
+        return address;
+    }
+
+    private static void validateCity(AddressDTO addressDTO) {
+        if (addressDTO.getCity() == null || City.valueOf(addressDTO.getCity()) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid city. Must be one of: " + java.util.Arrays.toString(City.values()));
+        }
     }
 
     @Transactional
@@ -61,5 +68,17 @@ public class AddressService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete address as it is being referenced by other entities");
         }
+    }
+
+    public List<Map<String, String>> getCities() {
+        List<Map<String, String>> cities = new ArrayList<>();
+        for (City city : City.values()) {
+            Map<String, String> cityMap = new HashMap<>();
+            cityMap.put("english", city.getEnglishName());
+            cityMap.put("arabic", city.getArabicName());
+            cityMap.put("value", city.name());
+            cities.add(cityMap);
+        }
+        return cities;
     }
 }

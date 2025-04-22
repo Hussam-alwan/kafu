@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddressMapper {
     
-    public AddressDTO toDTO(Address entity) {
+    public static AddressDTO toDTO(Address entity) {
         if (entity == null) {
             return null;
         }
@@ -15,11 +15,11 @@ public class AddressMapper {
         dto.setLatitude(entity.getLatitude());
         dto.setLongitude(entity.getLongitude());
         dto.setDescription(entity.getDescription());
-        dto.setCity(entity.getCity());
+        dto.setCity(entity.getCity().name());
         return dto;
     }
 
-    public Address toEntity(AddressDTO dto) {
+    public static Address toEntity(AddressDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -29,7 +29,7 @@ public class AddressMapper {
         return entity;
     }
 
-    public void updateEntity(Address entity, AddressDTO dto) {
+    public static void updateEntity(Address entity, AddressDTO dto) {
         if (dto == null) {
             return;
         }
@@ -40,11 +40,15 @@ public class AddressMapper {
         if (dto.getLongitude() != null) {
             entity.setLongitude(dto.getLongitude());
         }
-        if (dto.getAddress() != null) {
+        if (dto.getDescription() != null) {
             entity.setDescription(dto.getDescription());
         }
         if (dto.getCity() != null) {
-            entity.setCity(dto.getCity());
+            try {
+                entity.setCity(City.valueOf(dto.getCity()));
+            } catch (IllegalArgumentException e) {
+                entity.setCity(null); // Will be validated in service
+            }
         }
     }
 }

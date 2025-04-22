@@ -2,7 +2,6 @@ package com.kafu.kafu.address;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -23,5 +22,6 @@ public class Address {
     private String description;
 
     @Column(nullable = false, length = 50)
-    private String city;
+    @Enumerated(EnumType.STRING)
+    private City city;
 }

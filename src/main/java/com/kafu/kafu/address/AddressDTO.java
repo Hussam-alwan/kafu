@@ -17,9 +17,6 @@ public class AddressDTO {
     @NotNull(message = "Longitude is required")
     private BigDecimal longitude;
 
-    @NotBlank(message = "Address is required")
-    private String address;
-
     @NotBlank(message = "City is required")
     private String city;
 

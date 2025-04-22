@@ -1,45 +1,40 @@
 package com.kafu.kafu.gov;
 
-import com.kafu.kafu.address.AddressMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class GovMapper {
-    private final AddressMapper addressMapper;
 
-    public GovDTO toDTO(Gov entity) {
+    public static GovDTO toDTO(Gov entity) {
         if (entity == null) {
             return null;
         }
-
         GovDTO dto = new GovDTO();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setEmail(entity.getEmail());
         dto.setPhone(entity.getPhone());
         dto.setLogoUrl(entity.getLogoUrl());
-        dto.setAddress(addressMapper.toDTO(entity.getAddress()));
+        dto.setAddressId(entity.getAddress() != null ? entity.getAddress().getId() : null);
         dto.setParentGovId(entity.getParentGov() != null ? entity.getParentGov().getId() : null);
         return dto;
     }
 
-    public Gov toEntity(GovDTO dto) {
+    public static Gov toEntity(GovDTO dto) {
         if (dto == null) {
             return null;
         }
-
         Gov entity = new Gov();
         updateEntity(entity, dto);
         return entity;
     }
 
-    public void updateEntity(Gov entity, GovDTO dto) {
+    public static void updateEntity(Gov entity, GovDTO dto) {
         if (dto == null) {
             return;
         }
-
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }
@@ -52,6 +47,6 @@ public class GovMapper {
         if (dto.getLogoUrl() != null) {
             entity.setLogoUrl(dto.getLogoUrl());
         }
-        // Address and parentGov will be set by the service layer
+        // Address and parentGov will be set by the service layer, ignore here
     }
 }

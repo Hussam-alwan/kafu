@@ -1,6 +1,5 @@
 package com.kafu.kafu.gov;
 
-import com.kafu.kafu.address.AddressDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,7 +24,7 @@ public class GovDTO {
 
     private String logoUrl;
 
-    private AddressDTO address;
+    private Long addressId;
 
     private Long parentGovId;
 }

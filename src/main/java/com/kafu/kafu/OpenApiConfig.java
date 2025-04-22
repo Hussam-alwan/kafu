@@ -15,6 +15,8 @@ public class OpenApiConfig {
     String authServerUrl;
     @Value("${keycloak.realm}")
     String realm;
+    @Value("${keycloak.client-id}")
+    String clientId;
 
     private static final String OAUTH_SCHEME_NAME = "my_oAuth_security_schema";
 
@@ -23,26 +25,28 @@ public class OpenApiConfig {
         return new OpenAPI().components(new Components()
                         .addSecuritySchemes(OAUTH_SCHEME_NAME, createOAuthScheme()))
                 .addSecurityItem(new SecurityRequirement().addList(OAUTH_SCHEME_NAME))
-                .info(new Info().title("Todos Management Service")
-                        .description("A service providing todos.")
+                .info(new Info().title("kafu")
+                        .description("kafu")
                         .version("1.0"));
     }
 
     private SecurityScheme createOAuthScheme() {
-        OAuthFlows flows = createOAuthFlows();
         return new SecurityScheme().type(SecurityScheme.Type.OAUTH2)
-                .flows(flows);
+                .flows(createOAuthFlows());
     }
 
     private OAuthFlows createOAuthFlows() {
-        OAuthFlow flow = createAuthorizationCodeFlow();
-        return new OAuthFlows().implicit(flow);
+        return new OAuthFlows().implicit(createAuthorizationCodeFlow());
     }
 
     private OAuthFlow createAuthorizationCodeFlow() {
         return new OAuthFlow()
                 .authorizationUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/auth")
-                .scopes(new Scopes().addString("read_access", "read data")
-                        .addString("write_access", "modify data"));
+                .tokenUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
+                .refreshUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
+                .scopes(new Scopes()
+                        .addString("read_access", "read data")
+                        .addString("write_access", "modify data")
+                );
     }
 }

@@ -36,6 +36,7 @@ public class UserController {
 //    }
 
     @PutMapping("/{id}")
+    //    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody UserDTO userDTO) {
@@ -48,5 +49,11 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{userId}/associate-user")
+    public ResponseEntity<Void> associateUser(@RequestParam Long govId, @PathVariable Long userId) {
+        userService.associateUser(govId, userId);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,6 +1,7 @@
 package com.kafu.kafu.user;
 
 import com.kafu.kafu.address.AddressService;
+import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,7 +53,7 @@ public class UserService {
         User user = UserMapper.toEntity(userDTO);
         // Set gov if provided
         if (userDTO.getGovId() != null) {
-            user.setGov(govService.getGovEntity(userDTO.getGovId()));
+            user.setGov(govService.findById(userDTO.getGovId()));
         }
         // Set address if provided
         if (userDTO.getAddressId() != null) {
@@ -88,7 +89,7 @@ public class UserService {
 
         // Update gov if provided
         if (userDTO.getGovId() != null) {
-            user.setGov(govService.getGovEntity(userDTO.getGovId()));
+            user.setGov(govService.findById(userDTO.getGovId()));
         }
         // Update address if provided
         if (userDTO.getAddressId() != null) {
@@ -116,5 +117,12 @@ public class UserService {
             return jwt.getClaimAsString("sub");
         }
         return null;
+    }
+
+    public void associateUser(Long govId, Long userId) {
+        Gov gov = govService.findById(govId);
+        User user = findById(userId);
+        user.setGov(gov);
+        userRepository.save(user);
     }
 }

@@ -7,9 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ProblemCategoryMapper {
-    private final GovService govService;
 
-    public ProblemCategoryDTO toDTO(ProblemCategory entity) {
+    public static ProblemCategoryDTO toDTO(ProblemCategory entity) {
         if (entity == null) {
             return null;
         }
@@ -21,7 +20,7 @@ public class ProblemCategoryMapper {
         return dto;
     }
 
-    public ProblemCategory toEntity(ProblemCategoryDTO dto) {
+    public static ProblemCategory toEntity(ProblemCategoryDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -31,16 +30,13 @@ public class ProblemCategoryMapper {
         return entity;
     }
 
-    public void updateEntity(ProblemCategory entity, ProblemCategoryDTO dto) {
+    public static void updateEntity(ProblemCategory entity, ProblemCategoryDTO dto) {
         if (dto == null) {
             return;
         }
 
         if (dto.getName() != null) {
             entity.setName(dto.getName());
-        }
-        if (dto.getGovId() != null) {
-            entity.setGov(govService.getGovEntity(dto.getGovId()));
         }
     }
 }

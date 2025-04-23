@@ -10,24 +10,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemCategoryService {
     private final ProblemCategoryRepository problemCategoryRepository;
-    private final ProblemCategoryMapper problemCategoryMapper;
     private final GovService govService;
 
-    public Page<ProblemCategoryDTO> findAll(Pageable pageable) {
-        return problemCategoryRepository.findAll(pageable)
-                .map(problemCategoryMapper::toDTO);
+    public Page<ProblemCategory> findAll(Pageable pageable) {
+        return problemCategoryRepository.findAll(pageable);
     }
 
-    public List<ProblemCategoryDTO> findByGovId(Long govId) {
-        return problemCategoryRepository.findByGovId(govId).stream()
-                .map(problemCategoryMapper::toDTO)
-                .collect(Collectors.toList());
+    public List<ProblemCategory> findByGovId(Long govId) {
+        return problemCategoryRepository.findByGovId(govId).stream().toList();
     }
 
     public ProblemCategory findById(Long id) {
@@ -36,26 +31,26 @@ public class ProblemCategoryService {
     }
 
     @Transactional
-    public ProblemCategoryDTO create(ProblemCategoryDTO problemCategoryDTO) {
+    public ProblemCategory create(ProblemCategoryDTO problemCategoryDTO) {
         if (problemCategoryDTO.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new problem category cannot already have an ID");
         }
 
         // This will throw 404 if gov not found
-        Gov gov = govService.getGovEntity(problemCategoryDTO.getGovId());
+        Gov gov = govService.findById(problemCategoryDTO.getGovId());
 
         if (problemCategoryRepository.existsByNameAndGovId(problemCategoryDTO.getName(), problemCategoryDTO.getGovId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Problem category with this name already exists for the given gov");
         }
 
-        ProblemCategory problemCategory = problemCategoryMapper.toEntity(problemCategoryDTO);
+        ProblemCategory problemCategory = ProblemCategoryMapper.toEntity(problemCategoryDTO);
         problemCategory.setGov(gov);
         problemCategory = problemCategoryRepository.save(problemCategory);
-        return problemCategoryMapper.toDTO(problemCategory);
+        return problemCategory;
     }
 
     @Transactional
-    public ProblemCategoryDTO update(Long id, ProblemCategoryDTO problemCategoryDTO) {
+    public ProblemCategory update(Long id, ProblemCategoryDTO problemCategoryDTO) {
         ProblemCategory problemCategory = problemCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem category not found"));
 
@@ -65,12 +60,12 @@ public class ProblemCategoryService {
         }
 
         // This will throw 404 if gov not found
-        Gov gov = govService.getGovEntity(problemCategoryDTO.getGovId());
+        Gov gov = govService.findById(problemCategoryDTO.getGovId());
 
-        problemCategoryMapper.updateEntity(problemCategory, problemCategoryDTO);
+        ProblemCategoryMapper.updateEntity(problemCategory, problemCategoryDTO);
         problemCategory.setGov(gov);
         problemCategory = problemCategoryRepository.save(problemCategory);
-        return problemCategoryMapper.toDTO(problemCategory);
+        return problemCategory;
     }
 
     @Transactional

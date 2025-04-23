@@ -15,43 +15,51 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProblemCategoryController {
     private final ProblemCategoryService problemCategoryService;
-    private final ProblemCategoryMapper problemCategoryMapper;
 
     @GetMapping
     public ResponseEntity<Page<ProblemCategoryDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(problemCategoryService.findAll(pageable));
+        return ResponseEntity.ok(problemCategoryService.findAll(pageable).map(ProblemCategoryMapper::toDTO));
     }
 
     @GetMapping("/by-gov/{govId}")
     public ResponseEntity<List<ProblemCategoryDTO>> findByGovId(@PathVariable Long govId) {
-        return ResponseEntity.ok(problemCategoryService.findByGovId(govId));
+        return ResponseEntity.ok(problemCategoryService.
+                findByGovId(govId)
+                .stream()
+                .map(ProblemCategoryMapper::toDTO)
+                .toList()
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProblemCategoryDTO> findById(@PathVariable Long id) {
         ProblemCategory problemCategory = problemCategoryService.findById(id);
-        return ResponseEntity.ok(problemCategoryMapper.toDTO(problemCategory));
+        return ResponseEntity.ok(ProblemCategoryMapper.toDTO(problemCategory));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProblemCategoryDTO> create(@Valid @RequestBody ProblemCategoryDTO problemCategoryDTO) {
-        ProblemCategoryDTO created = problemCategoryService.create(problemCategoryDTO);
+        ProblemCategory created = problemCategoryService.create(problemCategoryDTO);
         return ResponseEntity
                 .created(URI.create("/api/v1/problem-categories/" + created.getId()))
-                .body(created);
+                .body(ProblemCategoryMapper.toDTO(created));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProblemCategoryDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody ProblemCategoryDTO problemCategoryDTO) {
-        return ResponseEntity.ok(problemCategoryService.update(id, problemCategoryDTO));
+        return ResponseEntity.ok(
+                ProblemCategoryMapper.toDTO(
+                    problemCategoryService.update(id, problemCategoryDTO)
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         problemCategoryService.delete(id);
         return ResponseEntity.noContent().build();

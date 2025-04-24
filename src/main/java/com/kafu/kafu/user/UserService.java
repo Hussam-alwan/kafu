@@ -111,12 +111,30 @@ public class UserService {
         }
     }
 
-    private String getKeycloakIdFromSecurityContext() {
+    public String getKeycloakIdFromSecurityContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if ((authentication != null) && (authentication.getPrincipal() instanceof Jwt jwt)) {
             return jwt.getClaimAsString("sub");
         }
         return null;
+    }
+    public User findByKeycloakId(String keycloakId) {
+        return userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    public User getCurrentUser()
+    {
+        String keycloakId = getKeycloakIdFromSecurityContext();
+        if (keycloakId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authenticated user");
+        }
+        // Find user by keycloak id
+        var user = findByKeycloakId(keycloakId);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for current user");
+        }
+        return user;
     }
 
     public void associateUser(Long govId, Long userId) {

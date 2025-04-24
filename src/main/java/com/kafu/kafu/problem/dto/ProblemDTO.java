@@ -1,7 +1,7 @@
-package com.kafu.kafu.problem;
+package com.kafu.kafu.problem.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kafu.kafu.address.AddressDTO;
+import com.kafu.kafu.problem.ProblemStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,29 +21,23 @@ public class ProblemDTO {
     private String description;
 
     private Boolean isReal = false;
+
     private Boolean forContribution = false;
+
     private Boolean forDonation = false;
+
     private LocalDateTime submissionDate;
 
-    @NotNull(message = "Address is required")
-    private AddressDTO address;
-
-    @NotNull(message = "Submitted by user ID is required")
-    private Long submittedByUserId;
-    private Long approvedByGovId;
-
-    private LocalDateTime submittedAt;
- 
-    private LocalDateTime approvedAt;
-  
-    private LocalDateTime rejectedAt;
-    
-    private LocalDateTime resolvedAt;
+    private ProblemStatus status;
 
     private String rejectionReason;
 
-    @NotNull(message = "Status is required")
-    private ProblemStatus status;
+    @NotNull(message = "Address ID is required")
+    private Long addressId;
+
+    private Long submittedByUserId;
+
+    private Long approvedByUserId;
 
     @NotNull(message = "Category ID is required")
     private Long categoryId;

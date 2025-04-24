@@ -1,14 +1,18 @@
 package com.kafu.kafu.problem;
 
+import com.kafu.kafu.problem.dto.ProblemDTO;
+import com.kafu.kafu.problem.dto.ProblemDetailsDTO;
+import com.kafu.kafu.problem.dto.ProblemRejectionDTO;
+import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
+import com.kafu.kafu.problem.dto.RealFieldsDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/problems")
@@ -17,23 +21,27 @@ public class ProblemController {
     private final ProblemService problemService;
 
     @GetMapping
-    public ResponseEntity<Page<ProblemDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(problemService.findAll(pageable));
+    public ResponseEntity<Page<ProblemDTO>> findAll(@ModelAttribute ProblemSearchCriteria criteria,
+                                                    @PageableDefault(size = 20) Pageable pageable) {
+        criteria.setPageable(pageable);
+        return ResponseEntity.ok(problemService.search(criteria).map(ProblemMapper::toDTO));
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ProblemDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(problemService.findById(id));
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.findById(id)));
     }
 
     @PostMapping
     public ResponseEntity<ProblemDTO> create(@Valid @RequestBody ProblemDTO problemDTO) {
-        return ResponseEntity.ok(problemService.create(problemDTO));
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.create(problemDTO)));
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ProblemDTO> update(@PathVariable Long id, @Valid @RequestBody ProblemDTO problemDTO) {
-        return ResponseEntity.ok(problemService.update(id, problemDTO));
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.update(id, problemDTO)));
     }
 
     @DeleteMapping("/{id}")
@@ -42,31 +50,23 @@ public class ProblemController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/by-category/{categoryId}")
-    public ResponseEntity<List<ProblemDTO>> findByCategory(@PathVariable Long categoryId) {
-        return ResponseEntity.ok(problemService.findByCategoryId(categoryId));
-    }
-
-    @GetMapping("/by-approved-gov/{govId}")
-    public ResponseEntity<List<ProblemDTO>> findByApprovedByGov(@PathVariable Long govId) {
-        return ResponseEntity.ok(problemService.findByApprovedByGovId(govId));
-    }
-
     @PostMapping("/{id}/approve")
-    @PreAuthorize("hasRole('GOV') or hasRole('ADMIN')")
-    public ResponseEntity<ProblemDTO> approve(@PathVariable Long id, @RequestParam Long govId) {
-        return ResponseEntity.ok(problemService.approve(id, govId));
+    public ResponseEntity<ProblemDTO> approve(@PathVariable Long id) {
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.approve(id)));
     }
 
-    @PutMapping("/{id}/real-fields")
-    @PreAuthorize("hasRole('GOV')")
-    public ResponseEntity<ProblemDTO> updateRealFields(@PathVariable Long id, @RequestBody ProblemDTO problemDTO) {
-        return ResponseEntity.ok(problemService.updateRealFields(id, problemDTO));
+    @PatchMapping("/{id}/real-fields")
+    public ResponseEntity<ProblemDTO> updateRealFields(@PathVariable Long id, @RequestBody RealFieldsDTO realFieldsDTO) {
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.updateRealFields(id, realFieldsDTO)));
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<ProblemDTO> reject(@PathVariable Long id, @Valid @RequestBody ProblemRejectionDTO rejectionDTO) {
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.reject(id, rejectionDTO)));
     }
 
     @PutMapping("/{id}/details")
-//    @PreAuthorize("@problemSecurity.isSubmitter(#id, authentication)")
-    public ResponseEntity<ProblemDTO> updateDetails(@PathVariable Long id, @RequestBody ProblemDTO problemDTO) {
-        return ResponseEntity.ok(problemService.updateDetails(id, problemDTO));
+    public ResponseEntity<ProblemDTO> updateDetails(@PathVariable Long id, @RequestBody ProblemDetailsDTO detailsDTO) {
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.updateDetails(id, detailsDTO)));
     }
 }

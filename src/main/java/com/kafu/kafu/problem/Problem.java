@@ -34,6 +34,15 @@ public class Problem {
     @Column(name = "submission_date", nullable = false)
     private LocalDateTime submissionDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProblemStatus status;
+
+    @Column(name = "rejection_reason", nullable = false)
+    private String rejectionReason;
+
+    //relationships
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
@@ -43,20 +52,10 @@ public class Problem {
     private User submittedByUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "approved_by_gov_id")
-    private Gov approvedByGov;
+    @JoinColumn(name = "approved_by_user_id")
+    private User approvedByUser;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private ProblemCategory category;
-
-    private LocalDateTime submittedAt;
-    private LocalDateTime approvedAt;
-    private LocalDateTime rejectedAt;
-    private LocalDateTime resolvedAt;
-    private String rejectionReason;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ProblemStatus status;
 }

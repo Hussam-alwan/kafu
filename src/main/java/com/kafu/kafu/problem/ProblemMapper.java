@@ -1,21 +1,10 @@
 package com.kafu.kafu.problem;
 
-import com.kafu.kafu.address.AddressMapper;
-import com.kafu.kafu.gov.GovService;
-import com.kafu.kafu.problemcategory.ProblemCategoryService;
-import com.kafu.kafu.user.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import com.kafu.kafu.problem.dto.ProblemDTO;
 
-@Component
-@RequiredArgsConstructor
 public class ProblemMapper {
-    private final AddressMapper addressMapper;
-    private final UserService userService;
-    private final GovService govService;
-    private final ProblemCategoryService problemCategoryService;
 
-    public ProblemDTO toDTO(Problem entity) {
+    public static ProblemDTO toDTO(Problem entity) {
         if (entity == null) {
             return null;
         }
@@ -28,20 +17,16 @@ public class ProblemMapper {
         dto.setForContribution(entity.getForContribution());
         dto.setForDonation(entity.getForDonation());
         dto.setSubmissionDate(entity.getSubmissionDate());
-        dto.setAddress(addressMapper.toDTO(entity.getAddress()));
+        dto.setAddressId(entity.getAddress() != null ? entity.getAddress().getId() : null);
         dto.setSubmittedByUserId(entity.getSubmittedByUser() != null ? entity.getSubmittedByUser().getId() : null);
-        dto.setApprovedByGovId(entity.getApprovedByGov() != null ? entity.getApprovedByGov().getId() : null);
+        dto.setApprovedByUserId(entity.getApprovedByUser() != null ? entity.getApprovedByUser().getId() : null);
         dto.setCategoryId(entity.getCategory() != null ? entity.getCategory().getId() : null);
-        dto.setSubmittedAt(entity.getSubmittedAt());
-        dto.setApprovedAt(entity.getApprovedAt());
-        dto.setRejectedAt(entity.getRejectedAt());
-        dto.setResolvedAt(entity.getResolvedAt());
         dto.setRejectionReason(entity.getRejectionReason());
         dto.setStatus(entity.getStatus());
         return dto;
     }
 
-    public Problem toEntity(ProblemDTO dto) {
+    public static Problem toEntity(ProblemDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -51,7 +36,7 @@ public class ProblemMapper {
         return entity;
     }
 
-    public void updateEntity(Problem entity, ProblemDTO dto) {
+    public static void updateEntity(Problem entity, ProblemDTO dto) {
         if (dto == null) {
             return;
         }
@@ -74,20 +59,11 @@ public class ProblemMapper {
         if (dto.getSubmissionDate() != null) {
             entity.setSubmissionDate(dto.getSubmissionDate());
         }
-        if (dto.getAddress() != null) {
-            entity.setAddress(addressMapper.toEntity(dto.getAddress()));
-        }
-        if (dto.getSubmittedByUserId() != null) {
-            entity.setSubmittedByUser(userService.getUserEntity(dto.getSubmittedByUserId()));
-        }
-        if (dto.getApprovedByGovId() != null) {
-            entity.setApprovedByGov(govService.getGovEntity(dto.getApprovedByGovId()));
-        }
-        if (dto.getCategoryId() != null) {
-            entity.setCategory(problemCategoryService.findById(dto.getCategoryId()));
-        }
         if (dto.getStatus() != null) {
             entity.setStatus(dto.getStatus());
+        }
+        if (dto.getRejectionReason() != null) {
+            entity.setRejectionReason(dto.getRejectionReason());
         }
     }
 }

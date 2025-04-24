@@ -35,7 +35,7 @@ public class UserDTO {
     private String collegeDegree;
 
     @Size(max = 50, message = "Occupation cannot exceed 50 characters")
-    private String occupation;
+    private String job;
 
     private String cvUrl;
     private String photoUrl;

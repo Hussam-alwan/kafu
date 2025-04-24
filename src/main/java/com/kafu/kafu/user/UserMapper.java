@@ -20,7 +20,7 @@ public class UserMapper {
         dto.setPhone(entity.getPhone());
         dto.setDateOfBirth(entity.getDateOfBirth());
         dto.setCollegeDegree(entity.getCollegeDegree());
-        dto.setOccupation(entity.getOccupation());
+        dto.setJob(entity.getJob());
         dto.setCvUrl(entity.getCvUrl());
         dto.setPhotoUrl(entity.getPhotoUrl());
         dto.setDescription(entity.getDescription());
@@ -62,8 +62,8 @@ public class UserMapper {
         if (dto.getCollegeDegree() != null) {
             entity.setCollegeDegree(dto.getCollegeDegree());
         }
-        if (dto.getOccupation() != null) {
-            entity.setOccupation(dto.getOccupation());
+        if (dto.getJob() != null) {
+            entity.setJob(dto.getJob());
         }
         if (dto.getCvUrl() != null) {
             entity.setCvUrl(dto.getCvUrl());

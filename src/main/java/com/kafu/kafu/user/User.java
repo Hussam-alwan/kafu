@@ -35,7 +35,7 @@ public class User {
     private String collegeDegree;
 
     @Column(length = 50)
-    private String occupation;
+    private String job;
 
     private String cvUrl;
     private String photoUrl;

@@ -2,9 +2,6 @@ package com.kafu.kafu.gov;
 
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.address.AddressService;
-import com.kafu.kafu.user.User;
-import com.kafu.kafu.user.UserRepository;
-import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class GovService {
     private final GovRepository govRepository;
     private final AddressService addressService;
-    private final UserService userService;
 
     public Page<Gov> findAll(Pageable pageable) {
         return govRepository.findAll(pageable);

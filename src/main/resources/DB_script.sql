@@ -7,24 +7,7 @@ CREATE TABLE Address (
     city VARCHAR(50) NOT NULL
 );
 
--- 2. User Table
-CREATE TABLE Users (
-    id bigint PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-	date_of_birth DATE,
-    college_degree VARCHAR(100),
-    occupation VARCHAR(50),
-    cv_url VARCHAR(255),
-    photo_url VARCHAR(255),
-    description TEXT,
-    address_id bigint,
-    FOREIGN KEY (address_id) REFERENCES Address(id)
-);
-
--- 3. Gov Table (Government Entity)
+-- 2. Gov Table (Government Entity)
 CREATE TABLE Gov (
     id bigint PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
@@ -32,10 +15,31 @@ CREATE TABLE Gov (
     logo_url VARCHAR(255),
     address_id bigint NOT NULL,
 	phone varchar(20),
-    user_id bigint NOT NULL,
-    FOREIGN KEY (address_id) REFERENCES Address(id),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
+    parent_gov_id bigint,
+    FOREIGN KEY (address_id) REFERENCES Address(id)
 );
+
+-- 3. User Table
+CREATE TABLE Users (
+    id bigint PRIMARY KEY,
+    keycloak_id VARCHAR(50),
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+	date_of_birth DATE,
+    college_degree VARCHAR(100),
+    job VARCHAR(50),
+    cv_url VARCHAR(255),
+    photo_url VARCHAR(255),
+    description TEXT,
+    address_id bigint,
+	gov_id bigint,
+    FOREIGN KEY (address_id) REFERENCES Address(id),
+	FOREIGN KEY (gov_id) REFERENCES Gov(id)
+);
+
+
 
 -- 4. ProblemCategory Table
 CREATE TABLE Problem_Category (
@@ -54,13 +58,16 @@ CREATE TABLE Problem (
     for_contribution BOOLEAN NOT NULL DEFAULT FALSE,
     for_donation BOOLEAN NOT NULL DEFAULT FALSE,
     submission_date TIMESTAMP  NOT NULL,
-    submitted_by bigint NOT NULL,
-    approved_by bigint,
+    submitted_by_user_id bigint NOT NULL,
+    approved_by_user_id bigint,
+	rejection_reason VARCHAR(255),
     address_id bigint NOT NULL,
+	category_id bigint NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'in_progress', 'resolved')),
-    FOREIGN KEY (submitted_by) REFERENCES Users(id),
-    FOREIGN KEY (approved_by) REFERENCES Gov(id),
-    FOREIGN KEY (address_id) REFERENCES Address(id)
+    FOREIGN KEY (submitted_by_user_id) REFERENCES Users(id),
+    FOREIGN KEY (approved_by_user_id) REFERENCES Users(id),
+    FOREIGN KEY (address_id) REFERENCES Address(id),
+	FOREIGN KEY (category_id) REFERENCES Problem_Category(category_id)
 );
 
 -- 6. ProblemPhoto Table
@@ -80,15 +87,15 @@ CREATE TABLE Solution (
     status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected')),
     accepted_reason TEXT,
     start_date DATE,
-    completion_date DATE,
+    end_date DATE,
     feedback TEXT,
     rating INT CHECK (rating BETWEEN 1 AND 10),
     problem_id bigint NOT NULL,
-    proposed_by bigint NOT NULL,
-    accepted_by bigint,
+    proposed_by_user_id bigint NOT NULL,
+    accepted_by_user_id bigint,
     FOREIGN KEY (problem_id) REFERENCES Problem(id),
-    FOREIGN KEY (proposed_by) REFERENCES Users(id),
-    FOREIGN KEY (accepted_by) REFERENCES Gov(id)
+    FOREIGN KEY (proposed_by_user_id) REFERENCES Users(id),
+    FOREIGN KEY (accepted_by_user_id) REFERENCES Users(id)
 );
 
 -- 8. Donation Table
@@ -97,8 +104,6 @@ CREATE TABLE Donation (
     problem_id bigint NOT NULL,
     donor_id bigint NOT NULL,
     amount DECIMAL(12, 2) NOT NULL,
-    fee DECIMAL(12, 2) NOT NULL,
-    net_amount DECIMAL(12, 2) NOT NULL,
     currency VARCHAR(3) NOT NULL DEFAULT 'USD',
     payment_method VARCHAR(20) NOT NULL,
     payment_transaction_id VARCHAR(255),

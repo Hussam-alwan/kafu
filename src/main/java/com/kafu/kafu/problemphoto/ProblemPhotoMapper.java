@@ -38,7 +38,7 @@ public class ProblemPhotoMapper {
         }
 
         if (dto.getProblemId() != null) {
-            entity.setProblem(problemService.getProblemEntity(dto.getProblemId()));
+            entity.setProblem(problemService.findById(dto.getProblemId()));
         }
         if (dto.getPhotoUrl() != null) {
             entity.setPhotoUrl(dto.getPhotoUrl());

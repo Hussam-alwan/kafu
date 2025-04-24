@@ -22,7 +22,7 @@ public class SolutionDTO {
 
     private String acceptedReason;
     private LocalDate startDate;
-    private LocalDate completionDate;
+    private LocalDate endDate;
     private String feedback;
     private Integer rating;
 

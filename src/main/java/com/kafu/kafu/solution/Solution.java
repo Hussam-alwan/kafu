@@ -31,8 +31,8 @@ public class Solution {
     @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "completion_date")
-    private LocalDate completionDate;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     @Column(columnDefinition = "TEXT")
     private String feedback;

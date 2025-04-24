@@ -1,8 +1,5 @@
 package com.kafu.kafu.solution;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 public class SolutionMapper {
 
     public static SolutionDTO toDTO(Solution entity) {
@@ -17,7 +14,7 @@ public class SolutionMapper {
         dto.setStatus(entity.getStatus());
         dto.setAcceptedReason(entity.getAcceptedReason());
         dto.setStartDate(entity.getStartDate());
-        dto.setCompletionDate(entity.getCompletionDate());
+        dto.setEndDate(entity.getEndDate());
         dto.setFeedback(entity.getFeedback());
         dto.setRating(entity.getRating());
         dto.setProblemId(entity.getProblem() != null ? entity.getProblem().getId() : null);
@@ -56,8 +53,8 @@ public class SolutionMapper {
         if (dto.getStartDate() != null) {
             entity.setStartDate(dto.getStartDate());
         }
-        if (dto.getCompletionDate() != null) {
-            entity.setCompletionDate(dto.getCompletionDate());
+        if (dto.getEndDate() != null) {
+            entity.setEndDate(dto.getEndDate());
         }
         if (dto.getFeedback() != null) {
             entity.setFeedback(dto.getFeedback());

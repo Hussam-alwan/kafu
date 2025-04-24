@@ -1,4 +1,4 @@
-package com.kafu.kafu;
+package com.kafu.kafu.config;
 
 import io.swagger.v3.oas.models.security.*;
 import org.springframework.beans.factory.annotation.Value;

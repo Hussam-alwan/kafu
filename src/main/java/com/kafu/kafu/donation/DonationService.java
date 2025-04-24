@@ -1,6 +1,7 @@
 package com.kafu.kafu.donation;
 
 import com.kafu.kafu.problem.ProblemService;
+import com.kafu.kafu.user.User;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,107 +25,90 @@ public class DonationService {
     private static final BigDecimal FEE_PERCENTAGE = new BigDecimal("0.01"); // 1%
     
     private final DonationRepository donationRepository;
-    private final DonationMapper donationMapper;
     private final ProblemService problemService;
     private final UserService userService;
 
-    public Page<DonationDTO> findAll(Pageable pageable) {
-        return donationRepository.findAll(pageable)
-                .map(donationMapper::toDTO);
+    public Page<Donation> findAll(Pageable pageable) {
+        return donationRepository.findAll(pageable);
     }
 
-    public List<DonationDTO> findByProblemId(Long problemId) {
-        return donationRepository.findByProblemId(problemId)
-                .stream()
-                .map(donationMapper::toDTO)
-                .collect(Collectors.toList());
+    public List<Donation> findByProblemId(Long problemId) {
+        return donationRepository.findByProblemId(problemId);
     }
 
-    public List<DonationDTO> findByDonorId(Long donorId) {
-        return donationRepository.findByDonorId(donorId)
-                .stream()
-                .map(donationMapper::toDTO)
-                .collect(Collectors.toList());
+    public List<Donation> findByDonorId(Long donorId) {
+        return donationRepository.findByDonorId(donorId);
     }
 
-    public DonationDTO findById(Long id) {
-        return donationRepository.findById(id)
-                .map(donationMapper::toDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Donation not found"));
-    }
-
-    public Donation getDonationEntity(Long id) {
+    public Donation findById(Long id) {
         return donationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Donation not found"));
     }
 
     @Transactional
-    public DonationDTO create(DonationDTO donationDTO) {
+    public Donation create(DonationDTO donationDTO) {
         if (donationDTO.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new donation cannot already have an ID");
         }
 
         // Verify that the problem exists
-        problemService.findById(donationDTO.getProblemId());
-
-        // Set donor ID from security context or null for anonymous
-        Long donor = getCurrentUserId();
-        if(donor == null)
-        {
-            throw new RuntimeException("no user provided");
+        if (donationDTO.getProblemId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Problem ID is required");
         }
-        donationDTO.setDonorId(donor);
+        var problem = problemService.findById(donationDTO.getProblemId());
+        if (problem == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found");
+        }
 
         // Calculate fee and net amount
         BigDecimal amount = donationDTO.getAmount();
         BigDecimal fee = amount.multiply(FEE_PERCENTAGE).setScale(2, RoundingMode.HALF_UP);
         BigDecimal netAmount = amount.subtract(fee);
-        
         donationDTO.setFee(fee);
         donationDTO.setNetAmount(netAmount);
 
         // Set donation date
         donationDTO.setDonationDate(LocalDateTime.now());
-        
-        Donation donation = donationMapper.toEntity(donationDTO);
-        donation = donationRepository.save(donation);
-        return donationMapper.toDTO(donation);
-    }
 
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            if (authentication.getPrincipal() instanceof Jwt jwt) {
-                try {
-                    // Get the user ID from the "sub" claim of the JWT token
-                    String sub = jwt.getSubject();
-                    return Long.parseLong(sub);
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-        }
-        return null;
+        // Map all simple fields
+        Donation donation = new Donation();
+        DonationMapper.updateEntity(donation, donationDTO);
+
+        // Handle relations
+        donation.setDonor(userService.getCurrentUser());
+        donation.setProblem(problem);
+
+        donation = donationRepository.save(donation);
+        return donation;
     }
 
     @Transactional
-    public DonationDTO update(Long id, DonationDTO donationDTO) {
+    public Donation update(Long id, DonationDTO donationDTO) {
         Donation donation = donationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Donation not found"));
 
-        // Verify that the problem exists if it's being updated
+        // Map all simple fields
+        DonationMapper.updateEntity(donation, donationDTO);
+
+        // Handle relations
         if (donationDTO.getProblemId() != null) {
-            problemService.findById(donationDTO.getProblemId());
+            var problem = problemService.findById(donationDTO.getProblemId());
+            if (problem == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found");
+            }
+            donation.setProblem(problem);
         }
 
-        // Verify that the donor exists if it's being updated
         if (donationDTO.getDonorId() != null) {
-            userService.findById(donationDTO.getDonorId());
+            var donorUser = userService.findById(donationDTO.getDonorId());
+            if (donorUser == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Donor not found");
+            }
+            donation.setDonor(donorUser);
         }
 
-        donationMapper.updateEntity(donation, donationDTO);
         donation = donationRepository.save(donation);
-        return donationMapper.toDTO(donation);
+        return donation;
     }
 
     @Transactional

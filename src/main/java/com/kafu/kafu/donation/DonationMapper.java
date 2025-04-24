@@ -1,25 +1,15 @@
 package com.kafu.kafu.donation;
 
-import com.kafu.kafu.problem.ProblemService;
-import com.kafu.kafu.user.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-@Component
-@RequiredArgsConstructor
 public class DonationMapper {
-    private final ProblemService problemService;
-    private final UserService userService;
 
-    public DonationDTO toDTO(Donation entity) {
+    public static DonationDTO toDTO(Donation entity) {
         if (entity == null) {
             return null;
         }
-
         DonationDTO dto = new DonationDTO();
         dto.setId(entity.getId());
-        dto.setProblemId(entity.getProblem().getId());
-        dto.setDonorId(entity.getDonor().getId());
+        dto.setProblemId(entity.getProblem() != null ? entity.getProblem().getId() : null);
+        dto.setDonorId(entity.getDonor() != null ? entity.getDonor().getId() : null);
         dto.setAmount(entity.getAmount());
         dto.setFee(entity.getFee());
         dto.setNetAmount(entity.getNetAmount());
@@ -32,21 +22,19 @@ public class DonationMapper {
         return dto;
     }
 
-    public Donation toEntity(DonationDTO dto) {
+    public static Donation toEntity(DonationDTO dto) {
         if (dto == null) {
             return null;
         }
-
         Donation entity = new Donation();
         updateEntity(entity, dto);
         return entity;
     }
 
-    public void updateEntity(Donation entity, DonationDTO dto) {
+    public static void updateEntity(Donation entity, DonationDTO dto) {
         if (dto == null) {
             return;
         }
-
         if (dto.getAmount() != null) {
             entity.setAmount(dto.getAmount());
         }
@@ -74,11 +62,6 @@ public class DonationMapper {
         if (dto.getDonationDate() != null) {
             entity.setDonationDate(dto.getDonationDate());
         }
-        if (dto.getProblemId() != null) {
-            entity.setProblem(problemService.getProblemEntity(dto.getProblemId()));
-        }
-        if (dto.getDonorId() != null) {
-            entity.setDonor(userService.getUserEntity(dto.getDonorId()));
-        }
+        // Relations (problem, donor) handled in service
     }
 }

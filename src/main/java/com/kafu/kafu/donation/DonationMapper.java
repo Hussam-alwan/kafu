@@ -11,8 +11,6 @@ public class DonationMapper {
         dto.setProblemId(entity.getProblem() != null ? entity.getProblem().getId() : null);
         dto.setDonorId(entity.getDonor() != null ? entity.getDonor().getId() : null);
         dto.setAmount(entity.getAmount());
-        dto.setFee(entity.getFee());
-        dto.setNetAmount(entity.getNetAmount());
         dto.setCurrency(entity.getCurrency());
         dto.setPaymentMethod(entity.getPaymentMethod());
         dto.setPaymentTransactionId(entity.getPaymentTransactionId());
@@ -37,12 +35,6 @@ public class DonationMapper {
         }
         if (dto.getAmount() != null) {
             entity.setAmount(dto.getAmount());
-        }
-        if (dto.getFee() != null) {
-            entity.setFee(dto.getFee());
-        }
-        if (dto.getNetAmount() != null) {
-            entity.setNetAmount(dto.getNetAmount());
         }
         if (dto.getCurrency() != null) {
             entity.setCurrency(dto.getCurrency());

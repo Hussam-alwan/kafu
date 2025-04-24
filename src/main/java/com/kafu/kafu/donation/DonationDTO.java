@@ -20,10 +20,6 @@ public class DonationDTO {
     @Positive(message = "Amount must be positive")
     private BigDecimal amount;
 
-    private BigDecimal fee;
-
-    private BigDecimal netAmount;
-
     @NotNull(message = "Currency is required")
     private String currency = "USD";
 

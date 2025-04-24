@@ -26,12 +26,6 @@ public class Donation {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal fee;
-
-    @Column(name = "net_amount", nullable = false, precision = 12, scale = 2)
-    private BigDecimal netAmount;
-
     @Column(nullable = false, length = 3)
     private String currency = "USD";
 

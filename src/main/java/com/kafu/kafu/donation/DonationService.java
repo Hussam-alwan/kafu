@@ -1,23 +1,17 @@
 package com.kafu.kafu.donation;
 
 import com.kafu.kafu.problem.ProblemService;
-import com.kafu.kafu.user.User;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,13 +53,6 @@ public class DonationService {
         if (problem == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found");
         }
-
-        // Calculate fee and net amount
-        BigDecimal amount = donationDTO.getAmount();
-        BigDecimal fee = amount.multiply(FEE_PERCENTAGE).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal netAmount = amount.subtract(fee);
-        donationDTO.setFee(fee);
-        donationDTO.setNetAmount(netAmount);
 
         // Set donation date
         donationDTO.setDonationDate(LocalDateTime.now());

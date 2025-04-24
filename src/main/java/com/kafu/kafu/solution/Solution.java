@@ -1,6 +1,5 @@
 package com.kafu.kafu.solution;
 
-import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.problem.Problem;
 import com.kafu.kafu.user.User;
 import jakarta.persistence.*;
@@ -46,10 +45,10 @@ public class Solution {
     private Problem problem;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "proposed_by", nullable = false)
-    private User proposedBy;
+    @JoinColumn(name = "proposed_by_user_id", nullable = false)
+    private User proposedByUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accepted_by")
-    private Gov acceptedByGovId;
+    @JoinColumn(name = "accepted_by_user_id")
+    private User acceptedByUserId;
 }

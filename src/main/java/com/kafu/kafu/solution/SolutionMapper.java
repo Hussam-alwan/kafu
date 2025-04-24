@@ -1,19 +1,11 @@
 package com.kafu.kafu.solution;
 
-import com.kafu.kafu.gov.GovService;
-import com.kafu.kafu.problem.ProblemService;
-import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
 public class SolutionMapper {
-    private final ProblemService problemService;
-    private final UserService userService;
-    private final GovService govService;
 
-    public SolutionDTO toDTO(Solution entity) {
+    public static SolutionDTO toDTO(Solution entity) {
         if (entity == null) {
             return null;
         }
@@ -28,13 +20,13 @@ public class SolutionMapper {
         dto.setCompletionDate(entity.getCompletionDate());
         dto.setFeedback(entity.getFeedback());
         dto.setRating(entity.getRating());
-        dto.setProblemId(entity.getProblem().getId());
-        dto.setProposedById(entity.getProposedBy().getId());
-        dto.setAcceptedByGovId(entity.getAcceptedByGovId() != null ? entity.getAcceptedByGovId().getId() : null);
+        dto.setProblemId(entity.getProblem() != null ? entity.getProblem().getId() : null);
+        dto.setProposedByUserId(entity.getProposedByUserId() != null ? entity.getProposedByUserId().getId() : null);
+        dto.setAcceptedByUserId(entity.getAcceptedByUserId() != null ? entity.getAcceptedByUserId().getId() : null);
         return dto;
     }
 
-    public Solution toEntity(SolutionDTO dto) {
+    public static Solution toEntity(SolutionDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -44,7 +36,7 @@ public class SolutionMapper {
         return entity;
     }
 
-    public void updateEntity(Solution entity, SolutionDTO dto) {
+    public static void updateEntity(Solution entity, SolutionDTO dto) {
         if (dto == null) {
             return;
         }
@@ -73,14 +65,6 @@ public class SolutionMapper {
         if (dto.getRating() != null) {
             entity.setRating(dto.getRating());
         }
-        if (dto.getProblemId() != null) {
-            entity.setProblem(problemService.getProblemEntity(dto.getProblemId()));
-        }
-        if (dto.getProposedById() != null) {
-            entity.setProposedBy(userService.getUserEntity(dto.getProposedById()));
-        }
-        if (dto.getAcceptedByGovId() != null) {
-            entity.setAcceptedByGovId(govService.getGovEntity(dto.getAcceptedByGovId()));
-        }
+        // Problem, proposedByUserId, acceptedByUserId handled in service
     }
 }

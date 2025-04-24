@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/solutions")
@@ -15,38 +14,33 @@ public class SolutionController {
     private final SolutionService solutionService;
 
     @GetMapping
-    public ResponseEntity<Page<SolutionDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(solutionService.findAll(pageable));
-    }
-
-    @GetMapping("/by-problem/{problemId}")
-    public ResponseEntity<List<SolutionDTO>> findByProblemId(@PathVariable Long problemId) {
-        return ResponseEntity.ok(solutionService.findByProblemId(problemId));
-    }
-
-    @GetMapping("/by-proposer/{userId}")
-    public ResponseEntity<List<SolutionDTO>> findByProposedById(@PathVariable Long userId) {
-        return ResponseEntity.ok(solutionService.findByProposedById(userId));
-    }
-
-    @GetMapping("/by-acceptor/{govId}")
-    public ResponseEntity<List<SolutionDTO>> findByAcceptedById(@PathVariable Long govId) {
-        return ResponseEntity.ok(solutionService.findByAcceptedById(govId));
+    public ResponseEntity<Page<SolutionDTO>> findAll(
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Long problemId,
+            @RequestParam(required = false) Long proposedByUserId,
+            @RequestParam(required = false) Long acceptedByUserId,
+            Pageable pageable) {
+        SolutionSearchCriteria criteria = new SolutionSearchCriteria();
+        criteria.setDescription(description);
+        criteria.setProblemId(problemId);
+        criteria.setProposedByUserId(proposedByUserId);
+        criteria.setAcceptedByUserId(acceptedByUserId);
+        return ResponseEntity.ok(solutionService.search(criteria, pageable).map(SolutionMapper::toDTO));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SolutionDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(solutionService.findById(id));
+        return ResponseEntity.ok(SolutionMapper.toDTO(solutionService.findById(id)));
     }
 
     @PostMapping
     public ResponseEntity<SolutionDTO> create(@Valid @RequestBody SolutionDTO solutionDTO) {
-        return ResponseEntity.ok(solutionService.create(solutionDTO));
+        return ResponseEntity.ok(SolutionMapper.toDTO(solutionService.create(solutionDTO)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SolutionDTO> update(@PathVariable Long id, @Valid @RequestBody SolutionDTO solutionDTO) {
-        return ResponseEntity.ok(solutionService.update(id, solutionDTO));
+        return ResponseEntity.ok(SolutionMapper.toDTO(solutionService.update(id, solutionDTO)));
     }
 
     @DeleteMapping("/{id}")

@@ -29,7 +29,7 @@ public class SolutionDTO {
     @NotNull(message = "Problem ID is required")
     private Long problemId;
 
-    private Long proposedById;
+    private Long proposedByUserId;
 
-    private Long acceptedByGovId;
+    private Long acceptedByUserId;
 }

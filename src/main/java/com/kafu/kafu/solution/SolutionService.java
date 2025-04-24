@@ -1,110 +1,87 @@
 package com.kafu.kafu.solution;
 
-import com.kafu.kafu.gov.GovService;
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.user.UserService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SolutionService {
     private final SolutionRepository solutionRepository;
-    private final SolutionMapper solutionMapper;
     private final ProblemService problemService;
     private final UserService userService;
-    private final GovService govService;
 
-    public Page<SolutionDTO> findAll(Pageable pageable) {
-        return solutionRepository.findAll(pageable)
-                .map(solutionMapper::toDTO);
+    public Page<Solution> findAll(Pageable pageable) {
+        return solutionRepository.findAll(pageable);
     }
 
-    public List<SolutionDTO> findByProblemId(Long problemId) {
-        return solutionRepository.findByProblemId(problemId)
-                .stream()
-                .map(solutionMapper::toDTO)
-                .toList();
+    public Page<Solution> search(SolutionSearchCriteria criteria, Pageable pageable) {
+        Specification<Solution> spec = (root, query, cb) -> {
+            Predicate p = cb.conjunction();
+            if (criteria.getDescription() != null) {
+                p = cb.and(p, cb.like(cb.lower(root.get("description")), "%" + criteria.getDescription().toLowerCase() + "%"));
+            }
+            if (criteria.getProblemId() != null) {
+                p = cb.and(p, cb.equal(root.get("problem").get("id"), criteria.getProblemId()));
+            }
+            if (criteria.getProposedByUserId() != null) {
+                p = cb.and(p, cb.equal(root.get("proposedByUserId").get("id"), criteria.getProposedByUserId()));
+            }
+            if (criteria.getAcceptedByUserId() != null) {
+                p = cb.and(p, cb.equal(root.get("acceptedByUserId").get("id"), criteria.getAcceptedByUserId()));
+            }
+            return p;
+        };
+        return solutionRepository.findAll(spec, pageable);
     }
 
-    public List<SolutionDTO> findByProposedById(Long userId) {
-        return solutionRepository.findByProposedById(userId)
-                .stream()
-                .map(solutionMapper::toDTO)
-                .toList();
-    }
-
-    public List<SolutionDTO> findByAcceptedById(Long govId) {
-        return solutionRepository.findByAcceptedById(govId)
-                .stream()
-                .map(solutionMapper::toDTO)
-                .toList();
-    }
-
-    public SolutionDTO findById(Long id) {
-        return solutionRepository.findById(id)
-                .map(solutionMapper::toDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
-    }
-
-    public Solution getSolutionEntity(Long id) {
-        return solutionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
+    public Solution findById(Long id) {
+        return solutionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
     }
 
     @Transactional
-    public SolutionDTO create(SolutionDTO solutionDTO) {
-        if (solutionDTO.getId() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new solution cannot already have an ID");
-        }
-
-        // Verify that the problem exists
-        problemService.findById(solutionDTO.getProblemId());
-
-        // Verify that the proposing user exists
-        userService.findById(solutionDTO.getProposedById());
-
-        // Verify that the accepting gov exists if provided
-        if (solutionDTO.getAcceptedByGovId() != null) {
-            govService.findById(solutionDTO.getAcceptedByGovId());
-        }
-
-        Solution solution = solutionMapper.toEntity(solutionDTO);
-        solution.setStatus(SolutionStatus.PENDING_APPROVAL);
-        solution = solutionRepository.save(solution);
-        return solutionMapper.toDTO(solution);
-    }
-
-    @Transactional
-    public SolutionDTO update(Long id, SolutionDTO solutionDTO) {
-        Solution solution = solutionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
-
-        // Verify that the problem exists if it's being updated
+    public Solution create(SolutionDTO solutionDTO) {
+        Solution solution = new Solution();
+        // Handle relations
         if (solutionDTO.getProblemId() != null) {
-            problemService.findById(solutionDTO.getProblemId());
+            solution.setProblem(problemService.findById(solutionDTO.getProblemId()));
         }
-
-        // Verify that the proposing user exists if it's being updated
-        if (solutionDTO.getProposedById() != null) {
-            userService.findById(solutionDTO.getProposedById());
+        if (solutionDTO.getProposedByUserId() != null) {
+            solution.setProposedByUserId(userService.findById(solutionDTO.getProposedByUserId()));
         }
-
-        // Verify that the accepting gov exists if it's being updated
-        if (solutionDTO.getAcceptedByGovId() != null) {
-            govService.findById(solutionDTO.getAcceptedByGovId());
+        if (solutionDTO.getAcceptedByUserId() != null) {
+            solution.setAcceptedByUserId(userService.findById(solutionDTO.getAcceptedByUserId()));
         }
-
-        solutionMapper.updateEntity(solution, solutionDTO);
+        solution.setStatus(SolutionStatus.PENDING_APPROVAL);
+        SolutionMapper.toEntity(solutionDTO);
         solution = solutionRepository.save(solution);
-        return solutionMapper.toDTO(solution);
+        return solution;
+    }
+
+    @Transactional
+    public Solution update(Long id, SolutionDTO solutionDTO) {
+        Solution solution = findById(id);
+        // Handle relations
+        if (solutionDTO.getProblemId() != null) {
+            solution.setProblem(problemService.findById(solutionDTO.getProblemId()));
+        }
+        if (solutionDTO.getProposedByUserId() != null) {
+            solution.setProposedByUserId(userService.findById(solutionDTO.getProposedByUserId()));
+        }
+        if (solutionDTO.getAcceptedByUserId() != null) {
+            solution.setAcceptedByUserId(userService.findById(solutionDTO.getAcceptedByUserId()));
+        }
+        SolutionMapper.toEntity(solutionDTO);
+        solution = solutionRepository.save(solution);
+        return solution;
     }
 
     @Transactional

@@ -24,6 +24,12 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        if (isPermittedEndpoint(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = request.getHeader("Authorization");
         if (token == null ) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -52,6 +58,11 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private boolean isPermittedEndpoint(String path) {
+        return path.startsWith("/swagger-ui/") || path.equals("/swagger-ui") ||
+               path.startsWith("/v3/api-docs/") || path.equals("/v3/api-docs");
+    }
+
     private UserDTO getUserDetails(String token) {
         if (token == null) return null;
 
@@ -72,4 +83,3 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
         }
     }
 }
-

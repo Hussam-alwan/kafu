@@ -36,17 +36,17 @@ public class OpenApiConfig {
     }
 
     private OAuthFlows createOAuthFlows() {
-        return new OAuthFlows().implicit(createAuthorizationCodeFlow());
+        return new OAuthFlows().authorizationCode(createAuthorizationCodeFlow());
     }
 
     private OAuthFlow createAuthorizationCodeFlow() {
         return new OAuthFlow()
                 .authorizationUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/auth")
-                .tokenUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
-                .refreshUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
-                .scopes(new Scopes()
-                        .addString("read_access", "read data")
-                        .addString("write_access", "modify data")
-                );
+               .tokenUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
+               .refreshUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
+               .scopes(new Scopes()
+                       .addString("read_access", "read data")
+                       .addString("write_access", "modify data")
+               );
     }
 }

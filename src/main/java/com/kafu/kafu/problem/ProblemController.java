@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/problems")
@@ -68,5 +69,14 @@ public class ProblemController {
     @PutMapping("/{id}/details")
     public ResponseEntity<ProblemDTO> updateDetails(@PathVariable Long id, @RequestBody ProblemDetailsDTO detailsDTO) {
         return ResponseEntity.ok(ProblemMapper.toDTO(problemService.updateDetails(id, detailsDTO)));
+    }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<List<ProblemDTO>> findByUserId(@PathVariable Long userId) {
+        List<ProblemDTO> problems = problemService.findBySubmittedByUserId(userId)
+                .stream()
+                .map(ProblemMapper::toDTO)
+                .toList();
+        return ResponseEntity.ok(problems);
     }
 }

@@ -9,4 +9,5 @@ import java.util.List;
 public interface ProblemRepository extends JpaRepository<Problem, Long>, JpaSpecificationExecutor<Problem> {
     List<Problem> findByCategoryId(Long categoryId);
     List<Problem> findByApprovedByUserId(Long userId);
+    List<Problem> findBySubmittedByUserId(Long userId);
 }

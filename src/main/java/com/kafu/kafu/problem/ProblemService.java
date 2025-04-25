@@ -176,4 +176,8 @@ public class ProblemService {
         problem = problemRepository.save(problem);
         return problem;
     }
+
+    public List<Problem> findBySubmittedByUserId(Long userId) {
+        return problemRepository.findBySubmittedByUserId(userId);
+    }
 }

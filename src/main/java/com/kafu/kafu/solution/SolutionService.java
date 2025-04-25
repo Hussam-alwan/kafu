@@ -2,15 +2,14 @@ package com.kafu.kafu.solution;
 
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.user.UserService;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,27 +23,19 @@ public class SolutionService {
     }
 
     public Page<Solution> search(SolutionSearchCriteria criteria, Pageable pageable) {
-        Specification<Solution> spec = (root, query, cb) -> {
-            Predicate p = cb.conjunction();
-            if (criteria.getDescription() != null) {
-                p = cb.and(p, cb.like(cb.lower(root.get("description")), "%" + criteria.getDescription().toLowerCase() + "%"));
-            }
-            if (criteria.getProblemId() != null) {
-                p = cb.and(p, cb.equal(root.get("problem").get("id"), criteria.getProblemId()));
-            }
-            if (criteria.getProposedByUserId() != null) {
-                p = cb.and(p, cb.equal(root.get("proposedByUserId").get("id"), criteria.getProposedByUserId()));
-            }
-            if (criteria.getAcceptedByUserId() != null) {
-                p = cb.and(p, cb.equal(root.get("acceptedByUserId").get("id"), criteria.getAcceptedByUserId()));
-            }
-            return p;
-        };
-        return solutionRepository.findAll(spec, pageable);
+        return solutionRepository.findAll(SolutionSpecification.withSearchCriteria(criteria), pageable);
     }
 
     public Solution findById(Long id) {
         return solutionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
+    }
+
+    public List<Solution> findByProposedByUserId(Long userId) {
+        return solutionRepository.findByProposedByUserId_Id(userId);
+    }
+
+    public List<Solution> findByProblemId(Long problemId) {
+        return solutionRepository.findByProblem_Id(problemId);
     }
 
     @Transactional

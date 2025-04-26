@@ -36,7 +36,7 @@ public class OpenApiConfig {
     }
 
     private OAuthFlows createOAuthFlows() {
-        return new OAuthFlows().authorizationCode(createAuthorizationCodeFlow());
+        return new OAuthFlows().implicit(createAuthorizationCodeFlow());
     }
 
     private OAuthFlow createAuthorizationCodeFlow() {

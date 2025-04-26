@@ -1,4 +1,4 @@
-package com.kafu.kafu.user;
+package com.kafu.kafu.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;

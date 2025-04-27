@@ -149,7 +149,7 @@ public class UserService {
         // Find user by keycloak id
         var user = findByKeycloakId(keycloakId);
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for current user");
+            throw new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND);
         }
         return user;
     }

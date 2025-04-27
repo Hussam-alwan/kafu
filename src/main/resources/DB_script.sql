@@ -13,7 +13,7 @@ CREATE TABLE Gov (
     name VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(100) NOT NULL,
     logo_url VARCHAR(255),
-    address_id bigint NOT NULL,
+    address_id bigint,
 	phone varchar(20),
     parent_gov_id bigint,
     FOREIGN KEY (address_id) REFERENCES Address(id)

@@ -17,6 +17,7 @@ public class UserMapper {
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());
         dto.setEmail(entity.getEmail());
+        dto.setKeycloakId(entity.getKeycloakId());
         dto.setPhone(entity.getPhone());
         dto.setDateOfBirth(entity.getDateOfBirth());
         dto.setCollegeDegree(entity.getCollegeDegree());
@@ -52,6 +53,9 @@ public class UserMapper {
         }
         if (dto.getEmail() != null) {
             entity.setEmail(dto.getEmail());
+        }
+        if (dto.getKeycloakId() != null) {
+            entity.setKeycloakId(dto.getKeycloakId());
         }
         if (dto.getPhone() != null) {
             entity.setPhone(dto.getPhone());

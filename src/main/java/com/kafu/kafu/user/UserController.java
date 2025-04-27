@@ -56,4 +56,10 @@ public class UserController {
         userService.associateUser(govId, userId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser(@RequestHeader("X-User-ID") Long userId) {
+        User user = userService.findById(userId);
+        return ResponseEntity.ok(UserMapper.toDTO(user));
+    }
 }

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -44,17 +45,19 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
         if(userDTO != null)
         {
 
-            User user = userService.findByEmail(userDTO.getEmail());
-            boolean userExists = (user != null);
+            Optional<User> useroptional = userService.findByEmail(userDTO.getEmail());
+            boolean userExists = (useroptional.isPresent());
 
+            User user;
             if (!userExists) {
-                userService.create(userDTO);
+                user = userService.create(userDTO);
                 log.info("User registered successfully");
             } else {
+                user = useroptional.get();
                 log.info("User already exists, skipping sync");
             }
 
-            
+
             request = new CustomHeaderRequestWrapper(request, "X-User-ID", user.getId().toString());//this contains user id in database not keycloak id
         }
 

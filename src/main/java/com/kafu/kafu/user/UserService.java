@@ -1,6 +1,8 @@
 package com.kafu.kafu.user;
 
 import com.kafu.kafu.address.AddressService;
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +31,11 @@ public class UserService {
 
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Transactional
@@ -67,7 +69,7 @@ public class UserService {
     @Transactional
     public User update(Long id, UserDTO userDTO) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
 
         // Extract keycloak id from security context
         String tokenKeycloakId = getKeycloakIdFromSecurityContext();
@@ -102,7 +104,7 @@ public class UserService {
     @Transactional
     public void delete(Long id) {
         userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
         
         try {
             userRepository.deleteById(id);
@@ -120,7 +122,7 @@ public class UserService {
     }
     public User findByKeycloakId(String keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
     }
 
     public User getCurrentUser()

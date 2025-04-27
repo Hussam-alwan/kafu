@@ -3,10 +3,14 @@ package com.kafu.kafu.user;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
     private Long id;
 
@@ -40,7 +44,6 @@ public class UserDTO {
     private String cvUrl;
     private String photoUrl;
     private String description;
-    
     private Long addressId;
     private Long govId;
 }

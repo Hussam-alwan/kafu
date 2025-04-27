@@ -29,8 +29,23 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
+    Page<UserDTO> findAllDtos(Pageable pageable)
+    {
+        return userRepository.findAllDtos(pageable);
+    }
+
     public User findById(Long id) {
         return userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
+    }
+
+    Optional<UserDTO> findDtoById(Long id)
+    {
+        return userRepository.findDtoById(id);
+    }
+    UserDTO findDtoByIdOrError(Long id)
+    {
+        return userRepository.findDtoById(id)
                 .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
     }
 

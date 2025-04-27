@@ -26,7 +26,7 @@ CREATE TABLE Users (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    phone VARCHAR(20) NOT NULL,
+    phone VARCHAR(20),
 	date_of_birth DATE,
     college_degree VARCHAR(100),
     job VARCHAR(50),

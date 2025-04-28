@@ -1,5 +1,6 @@
 package com.kafu.kafu.solution;
 
+import com.kafu.kafu.solution.dto.SolutionSearchCriteria;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 

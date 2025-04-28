@@ -1,7 +1,6 @@
 package com.kafu.kafu.problem;
 
 import com.kafu.kafu.address.Address;
-import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.problemcategory.ProblemCategory;
 import com.kafu.kafu.user.User;
 import jakarta.persistence.*;

@@ -12,6 +12,7 @@ import com.kafu.kafu.problemcategory.ProblemCategoryService;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,13 +29,18 @@ public class ProblemService {
     private final UserService userService;
     private final ProblemCategoryService problemCategoryService;
 
-    public Page<Problem> search(ProblemSearchCriteria criteria) {
+    public Page<Problem> search(ProblemSearchCriteria criteria , Pageable pageable) {
         Specification<Problem> spec = ProblemSpecification.withSearchCriteria(criteria);
-        return problemRepository.findAll(spec, criteria.getPageable());
+        return problemRepository.findAll(spec, pageable);
     }
 
     public Problem findById(Long id) {
         return problemRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found"));
+    }
+
+    public ProblemDTO findDTOById(Long id) {
+        return problemRepository.findDtoById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found"));
     }
 
@@ -68,6 +74,9 @@ public class ProblemService {
         problem.setSubmissionDate(LocalDateTime.now());
         problem.setStatus(ProblemStatus.PENDING_APPROVAL);
         problem.setRejectionReason("");
+
+        ProblemCategory problemCategory = problemCategoryService.findById(problemDTO.getCategoryId());
+        problem.setCategory(problemCategory);
 
         problem = problemRepository.save(problem);
         return problem;
@@ -177,7 +186,7 @@ public class ProblemService {
         return problem;
     }
 
-    public List<Problem> findBySubmittedByUserId(Long userId) {
-        return problemRepository.findBySubmittedByUserId(userId);
+    public List<ProblemDTO> findBySubmittedByUserId(Long userId) {
+        return problemRepository.findDtosBySubmittedByUserId(userId);
     }
 }

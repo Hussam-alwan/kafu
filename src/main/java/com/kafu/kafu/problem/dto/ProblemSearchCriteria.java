@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.data.domain.Pageable;
 
 @Data
 public class ProblemSearchCriteria {
@@ -20,7 +19,4 @@ public class ProblemSearchCriteria {
 
     @Min(1) @Max(1000)
     private Long categoryId;
-    private Pageable pageable;
-
-
 }

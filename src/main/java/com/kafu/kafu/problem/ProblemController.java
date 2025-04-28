@@ -24,14 +24,13 @@ public class ProblemController {
     @GetMapping
     public ResponseEntity<Page<ProblemDTO>> findAll(@ModelAttribute ProblemSearchCriteria criteria,
                                                     @PageableDefault(size = 20) Pageable pageable) {
-        criteria.setPageable(pageable);
-        return ResponseEntity.ok(problemService.search(criteria).map(ProblemMapper::toDTO));
+        return ResponseEntity.ok(problemService.search(criteria,pageable).map(ProblemMapper::toDTO));
     }
 
 
     @GetMapping("/{id}")
     public ResponseEntity<ProblemDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.findById(id)));
+        return ResponseEntity.ok(problemService.findDTOById(id));
     }
 
     @PostMapping
@@ -51,32 +50,32 @@ public class ProblemController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/approve")
+    @PatchMapping("/{id}/approve")
     public ResponseEntity<ProblemDTO> approve(@PathVariable Long id) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.approve(id)));
+        problemService.approve(id);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/real-fields")
     public ResponseEntity<ProblemDTO> updateRealFields(@PathVariable Long id, @RequestBody RealFieldsDTO realFieldsDTO) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.updateRealFields(id, realFieldsDTO)));
+        problemService.updateRealFields(id, realFieldsDTO);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/reject")
+    @PatchMapping("/{id}/reject")
     public ResponseEntity<ProblemDTO> reject(@PathVariable Long id, @Valid @RequestBody ProblemRejectionDTO rejectionDTO) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.reject(id, rejectionDTO)));
+        problemService.reject(id, rejectionDTO);
+        return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/details")
+    @PatchMapping("/{id}/details")
     public ResponseEntity<ProblemDTO> updateDetails(@PathVariable Long id, @RequestBody ProblemDetailsDTO detailsDTO) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.updateDetails(id, detailsDTO)));
+        problemService.updateDetails(id, detailsDTO);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/by-user/{userId}")
     public ResponseEntity<List<ProblemDTO>> findByUserId(@PathVariable Long userId) {
-        List<ProblemDTO> problems = problemService.findBySubmittedByUserId(userId)
-                .stream()
-                .map(ProblemMapper::toDTO)
-                .toList();
-        return ResponseEntity.ok(problems);
+        return ResponseEntity.ok(problemService.findBySubmittedByUserId(userId));
     }
 }

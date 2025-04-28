@@ -63,7 +63,7 @@ CREATE TABLE Problem (
 	rejection_reason VARCHAR(255),
     address_id bigint NOT NULL,
 	category_id bigint NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'in_progress', 'resolved')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING_APPROVAL', 'APPROVED', 'REJECTED', 'IN_PROGRESS', 'RESOLVED')),
     FOREIGN KEY (submitted_by_user_id) REFERENCES Users(id),
     FOREIGN KEY (approved_by_user_id) REFERENCES Users(id),
     FOREIGN KEY (address_id) REFERENCES Address(id),

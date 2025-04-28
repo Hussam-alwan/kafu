@@ -1,5 +1,7 @@
 package com.kafu.kafu.solution;
 
+import com.kafu.kafu.solution.dto.SolutionDTO;
+
 public class SolutionMapper {
 
     public static SolutionDTO toDTO(Solution entity) {

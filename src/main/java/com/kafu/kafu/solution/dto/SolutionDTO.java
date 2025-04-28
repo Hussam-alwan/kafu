@@ -1,6 +1,7 @@
-package com.kafu.kafu.solution;
+package com.kafu.kafu.solution.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kafu.kafu.solution.SolutionStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

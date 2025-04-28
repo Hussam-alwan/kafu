@@ -1,5 +1,7 @@
 package com.kafu.kafu.solution;
 
+import com.kafu.kafu.solution.dto.SolutionDTO;
+import com.kafu.kafu.solution.dto.SolutionSearchCriteria;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

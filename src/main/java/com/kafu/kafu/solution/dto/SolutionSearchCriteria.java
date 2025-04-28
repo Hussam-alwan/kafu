@@ -1,4 +1,4 @@
-package com.kafu.kafu.solution;
+package com.kafu.kafu.solution.dto;
 
 import lombok.Data;
 

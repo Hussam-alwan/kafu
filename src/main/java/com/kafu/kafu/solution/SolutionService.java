@@ -1,6 +1,8 @@
 package com.kafu.kafu.solution;
 
 import com.kafu.kafu.problem.ProblemService;
+import com.kafu.kafu.solution.dto.SolutionDTO;
+import com.kafu.kafu.solution.dto.SolutionSearchCriteria;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,9 +20,9 @@ public class SolutionService {
     private final ProblemService problemService;
     private final UserService userService;
 
-    public Page<Solution> findAll(Pageable pageable) {
-        return solutionRepository.findAll(pageable);
-    }
+//    public Page<Solution> findAll(Pageable pageable) {
+//        return solutionRepository.findAll(pageable);
+//    }
 
     public Page<Solution> search(SolutionSearchCriteria criteria, Pageable pageable) {
         return solutionRepository.findAll(SolutionSpecification.withSearchCriteria(criteria), pageable);
@@ -41,13 +43,15 @@ public class SolutionService {
     @Transactional
     public Solution create(SolutionDTO solutionDTO) {
         Solution solution = new Solution();
+        solution.setDescription(solutionDTO.getDescription());
+        solution.setEstimatedCost(solutionDTO.getEstimatedCost());
         // Handle relations
         if (solutionDTO.getProblemId() != null) {
             solution.setProblem(problemService.findById(solutionDTO.getProblemId()));
         }
-        if (solutionDTO.getProposedByUserId() != null) {
-            solution.setProposedByUserId(userService.findById(solutionDTO.getProposedByUserId()));
-        }
+
+        solution.setProposedByUserId(userService.getCurrentUser());
+
         if (solutionDTO.getAcceptedByUserId() != null) {
             solution.setAcceptedByUserId(userService.findById(solutionDTO.getAcceptedByUserId()));
         }

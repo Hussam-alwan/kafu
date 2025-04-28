@@ -1,15 +1,25 @@
 package com.kafu.kafu.exception;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.rmi.NoSuchObjectException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Hidden
 @ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
@@ -44,16 +54,58 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({org.springframework.web.bind.MethodArgumentNotValidException.class,
-            org.springframework.web.bind.MissingServletRequestParameterException.class,
-            org.springframework.http.converter.HttpMessageNotReadableException.class,
-            org.springframework.web.bind.MissingPathVariableException.class,
-            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<ApiErrorResponse> handleRequestArgumentExceptions(Exception exc) {
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiErrorResponse> handleMissingParams(MissingServletRequestParameterException ex) {
         ApiErrorResponse error = new ApiErrorResponse();
         error.setStatus(HttpStatus.BAD_REQUEST.value());
-        error.setMessage("Missing or invalid request arguments: " + exc.getMessage());
+        error.setMessage("Missing required parameter: " + ex.getParameterName());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleMessageNotReadable(HttpMessageNotReadableException ex) {
+        ApiErrorResponse error = new ApiErrorResponse();
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setMessage("Invalid request body format");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .timeStamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Validation Failed Invalid input parameters")
+                .details(errors)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            String fieldName = violation.getPropertyPath().toString();
+            String errorMessage = violation.getMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        ApiErrorResponse errorResponse = ApiErrorResponse.builder()
+                .timeStamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Validation Failed Invalid input parameters")
+                .details(errors)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

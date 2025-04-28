@@ -36,7 +36,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.2
-    command: start-dev
+    command: start-dev --import-realm
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -58,7 +58,24 @@ services:
 
     volumes:
       - keycloak:/opt/keycloak/data
+      - ./keycloak/imports:/opt/keycloak/data/import
 
+  kafu-app:
+    build: .
+    container_name: kafu-app
+    ports:
+      - "8080:8080"
+    networks:
+      - kafu-network
+    depends_on:
+      - postgresql
+      - keycloak
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/kafu
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:9098
 
 volumes:
   postgres:

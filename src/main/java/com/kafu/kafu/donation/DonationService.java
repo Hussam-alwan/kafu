@@ -64,6 +64,7 @@ public class DonationService {
         // Handle relations
         donation.setDonor(userService.getCurrentUser());
         donation.setProblem(problem);
+        donation.setStatus(DonationStatus.PENDING);
 
         donation = donationRepository.save(donation);
         return donation;

@@ -13,7 +13,7 @@ public class DonationDTO {
     @NotNull(message = "Problem ID is required")
     private Long problemId;
 
-    @NotNull(message = "Donor ID is required")
+//    @NotNull(message = "Donor ID is required")
     private Long donorId;
 
     @NotNull(message = "Amount is required")

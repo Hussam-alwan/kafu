@@ -18,13 +18,13 @@ public class UserController {
     @GetMapping
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(userService.findAllDtos(pageable));
+        return ResponseEntity.ok(userService.findAll(pageable).map(UserMapper::toDTO));
     }
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findDtoByIdOrError(id));
+        return ResponseEntity.ok(UserMapper.toDTO(userService.findById(id)));
     }
 
     // this endpoint will not be needed as sign up will be handled by keycloack

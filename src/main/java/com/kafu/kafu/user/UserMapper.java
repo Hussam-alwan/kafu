@@ -25,10 +25,9 @@ public class UserMapper {
         dto.setCvUrl(entity.getCvUrl());
         dto.setPhotoUrl(entity.getPhotoUrl());
         dto.setDescription(entity.getDescription());
-        if(entity.getAddress()!= null)
-            dto.setAddressId(entity.getAddress().getId());
-        if(entity.getGov()!= null)
-            dto.setGovId(entity.getGov().getId());
+        dto.setAddressId(entity.getAddress()!= null? entity.getAddress().getId() : null);
+        dto.setGovId(entity.getGov()!= null? entity.getGov().getId() : null);
+
         return dto;
     }
 

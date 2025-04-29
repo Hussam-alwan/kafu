@@ -39,11 +39,6 @@ public class ProblemService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found"));
     }
 
-    public ProblemDTO findDTOById(Long id) {
-        return problemRepository.findDtoById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found"));
-    }
-
     @Transactional
     public Problem create(ProblemDTO problemDTO) {
         //set submitted uuser id here
@@ -186,7 +181,7 @@ public class ProblemService {
         return problem;
     }
 
-    public List<ProblemDTO> findBySubmittedByUserId(Long userId) {
-        return problemRepository.findDtosBySubmittedByUserId(userId);
+    public List<Problem> findBySubmittedByUserId(Long userId) {
+        return problemRepository.findBySubmittedByUser_Id(userId);
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -30,7 +29,7 @@ public class ProblemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProblemDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(problemService.findDTOById(id));
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.findById(id)));
     }
 
     @PostMapping
@@ -76,6 +75,6 @@ public class ProblemController {
 
     @GetMapping("/by-user/{userId}")
     public ResponseEntity<List<ProblemDTO>> findByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(problemService.findBySubmittedByUserId(userId));
+        return ResponseEntity.ok(problemService.findBySubmittedByUserId(userId).stream().map(ProblemMapper::toDTO).toList());
     }
 }

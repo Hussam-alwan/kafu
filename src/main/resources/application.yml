@@ -24,17 +24,11 @@ springdoc:
   swagger-ui:
     oauth:
       client-id: ${keycloak.client-id}
-#      pkce-enabled: true
-#      use-pkce-with-authorization-code-grant: true
-      scopes:
-        -openid
-        -profile
-        -read_access
-        -write_access
       realm: ${keycloak.realm}
       appName: kafu
-#      additional-query-string-params:
-#        code_challenge_method: S256
+swagger:
+  auth-server-url: http://localhost:9098
+  realm: kafu-realm
 
 server:
   port: 8080

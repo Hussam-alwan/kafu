@@ -3,12 +3,13 @@ services:
     container_name: pg_sql
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: keycloak
+      POSTGRES_DB: kafu
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     networks:
@@ -75,7 +76,8 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:9098
+      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080
+      SWAGGER_AUTH_SERVER_URL: http://localhost:9098
 
 volumes:
   postgres:

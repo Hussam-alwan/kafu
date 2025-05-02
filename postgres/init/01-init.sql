@@ -134,3 +134,4 @@ create sequence problem_photo_seq start with 1 increment by 50;
 create sequence problem_seq start with 1 increment by 50;
 create sequence solution_seq start with 1 increment by 50;
 create sequence users_seq start with 1 increment by 50;
+CREATE sequence problem_progress_seq start with 1 increment by 50;

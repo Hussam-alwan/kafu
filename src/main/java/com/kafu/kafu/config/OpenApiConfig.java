@@ -11,12 +11,10 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${keycloak.auth-server-url}")
+    @Value("${swagger.auth-server-url}")
     String authServerUrl;
-    @Value("${keycloak.realm}")
+    @Value("${swagger.realm}")
     String realm;
-    @Value("${keycloak.client-id}")
-    String clientId;
 
     private static final String OAUTH_SCHEME_NAME = "my_oAuth_security_schema";
 
@@ -43,10 +41,6 @@ public class OpenApiConfig {
         return new OAuthFlow()
                 .authorizationUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/auth")
                .tokenUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
-               .refreshUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token")
-               .scopes(new Scopes()
-                       .addString("read_access", "read data")
-                       .addString("write_access", "modify data")
-               );
+               .refreshUrl(authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token");
     }
 }

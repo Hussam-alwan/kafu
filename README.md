@@ -37,7 +37,7 @@ The following services will be started:
 - Keycloak Admin Console: http://localhost:9098
 - keycloack registration page: http://localhost:9098/realms/kafu-realm/account
 - PgAdmin4: http://localhost:5050
-- Swagger UI: http://localhost:8080/swagger-ui.html
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
 
 ## Service Credentials
 ### PostgreSQL

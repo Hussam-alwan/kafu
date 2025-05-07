@@ -16,7 +16,7 @@ import java.util.Map;
 public class AddressController {
     private final AddressService addressService;
 
-    @GetMapping
+//    @GetMapping
     public ResponseEntity<Page<AddressDTO>> findAll(Pageable pageable) {
         return ResponseEntity.ok(addressService.findAll(pageable)
                 .map(AddressMapper::toDTO));

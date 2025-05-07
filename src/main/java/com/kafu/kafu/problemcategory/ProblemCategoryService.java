@@ -2,10 +2,12 @@ package com.kafu.kafu.problemcategory;
 
 import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
+import com.kafu.kafu.problemcategory.dto.ProblemCategorySearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -78,5 +80,10 @@ public class ProblemCategoryService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete problem category as it is being referenced by other entities");
         }
+    }
+
+    public Page<ProblemCategory> search(ProblemCategorySearchCriteria criteria, Pageable pageable) {
+        Specification<ProblemCategory> spec = ProblemCategorySpecification.withSearchCriteria(criteria);
+        return problemCategoryRepository.findAll(spec, pageable);
     }
 }

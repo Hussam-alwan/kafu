@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
+import com.kafu.kafu.problemcategory.dto.ProblemCategorySearchCriteria;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/v1/problem-categories")
@@ -17,8 +19,11 @@ public class ProblemCategoryController {
     private final ProblemCategoryService problemCategoryService;
 
     @GetMapping
-    public ResponseEntity<Page<ProblemCategoryDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(problemCategoryService.findAll(pageable).map(ProblemCategoryMapper::toDTO));
+    public ResponseEntity<Page<ProblemCategoryDTO>> search(
+            @ModelAttribute ProblemCategorySearchCriteria criteria,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(problemCategoryService.search(criteria, pageable)
+                .map(ProblemCategoryMapper::toDTO));
     }
 
     @GetMapping("/by-gov/{govId}")

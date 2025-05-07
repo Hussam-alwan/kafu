@@ -37,6 +37,7 @@ keycloak:
   auth-server-url: http://localhost:9098
   realm: kafu-realm
   client-id: kafu-client
+  client-secret: my-super-secret-client-secret
 
 jwt:
   auth:

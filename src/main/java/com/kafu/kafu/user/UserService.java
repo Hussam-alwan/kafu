@@ -6,6 +6,8 @@ import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.Keycloak;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final AddressService addressService;
     private final GovService govService;
+    private final Keycloak keycloak;
 
+    @Value("${keycloak.realm}")
+    private String realm;
 
     public Page<User> findAll(Pageable pageable) {
         return userRepository.findAll(pageable);
@@ -104,14 +109,25 @@ public class UserService {
 
     @Transactional
     public void delete(Long id) {
+        User user =
         userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
-        
+        String keycloakId = user.getKeycloakId();
+
         try {
-            userRepository.deleteById(id);
+            var userResource = keycloak.realm(realm).users().get(keycloakId);
+            if (userResource != null) {
+                userResource.logout();
+                userResource.remove();
+            }
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete user as it is being referenced by other entities");
+            throw new RuntimeException("User could not be deleted");
         }
+
+        user.setDeleted(true);
+        user.setEmail("deleted_" + user.getEmail());
+        user.setKeycloakId("deleted_" + user.getKeycloakId());
+        userRepository.save(user);
     }
 
     public String getKeycloakIdFromSecurityContext() {

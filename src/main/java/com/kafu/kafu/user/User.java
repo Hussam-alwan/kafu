@@ -48,4 +48,6 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gov_id")
     private Gov gov;
+
+    private Boolean deleted;
 }

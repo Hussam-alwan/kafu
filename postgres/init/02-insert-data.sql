@@ -30,7 +30,7 @@ BEGIN
 
     -- Populate Users (50 records)
     INSERT INTO Users (id, keycloak_id, first_name, last_name, email, phone, date_of_birth,
-                      college_degree, job, cv_url, photo_url, description, address_id, gov_id)
+                      college_degree, job, cv_url, photo_url, description, address_id, gov_id,deleted)
     SELECT
         nextval('users_seq'),
         'kcid-' || i,
@@ -45,7 +45,8 @@ BEGIN
         'http://photos.example.com/' || i || '.jpg',
         'User description for ' || i,
         a.id,
-        g.id
+        g.id,
+        null
     FROM generate_series(1, 50) i
     JOIN Address a ON a.id = 1 + ((i-1) * 50)
     JOIN Gov g ON g.id = 1 + ((i-1) * 50);

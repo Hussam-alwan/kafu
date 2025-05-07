@@ -35,6 +35,7 @@ CREATE TABLE Users (
     description TEXT,
     address_id bigint,
 	gov_id bigint,
+	deleted BOOLEAN,
     FOREIGN KEY (address_id) REFERENCES Address(id),
 	FOREIGN KEY (gov_id) REFERENCES Gov(id)
 );

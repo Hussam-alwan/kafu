@@ -488,6 +488,30 @@
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "webAuthnPolicyPasswordlessExtraOrigins": [],
+  "users": [
+    {
+      "id": "28a73cf1-2cc1-4491-9c28-37fdc3f954e5",
+      "username": "service-account-kafu-client",
+      "emailVerified": true,
+      "createdTimestamp": 1746359655999,
+      "enabled": true,
+      "totp": false,
+      "serviceAccountClientId": "kafu-client",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-kafu-realm"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "query-users",
+          "manage-users"
+        ]
+      },
+      "notBefore": 0,
+      "groups": []
+    }
+  ],
   "scopeMappings": [
     {
       "clientScope": "offline_access",
@@ -712,14 +736,18 @@
       "enabled": true,
       "alwaysDisplayInConsole": true,
       "clientAuthenticatorType": "client-secret",
+      "secret": "my-super-secret-client-secret",
       "redirectUris": [
-        "http://localhost:8080/swagger-ui/*",
-        "http:localhost:5173",
-        "http://localhost:8080/*"
+        "http://localhost:8080/*",
+        "http://localhost:8080",
+        "http://localhost:5173/*",
+        "http://localhost:5173"
       ],
       "webOrigins": [
-        "http:localhost:5173",
-        "http://localhost:8080"
+        "http://localhost:8080/*",
+        "http://localhost:8080",
+        "http://localhost:5173/*",
+        "http://localhost:5173"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -727,8 +755,8 @@
       "standardFlowEnabled": true,
       "implicitFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": false,
-      "publicClient": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
       "frontchannelLogout": true,
       "protocol": "openid-connect",
       "attributes": {
@@ -757,6 +785,7 @@
       "nodeReRegistrationTimeout": -1,
       "defaultClientScopes": [
         "web-origins",
+        "service_account",
         "acr",
         "profile",
         "roles",

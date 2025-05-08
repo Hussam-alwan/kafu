@@ -1,10 +1,7 @@
 package com.kafu.kafu.problem;
 
 import com.kafu.kafu.problem.dto.ProblemDTO;
-import com.kafu.kafu.problem.dto.ProblemDetailsDTO;
-import com.kafu.kafu.problem.dto.ProblemRejectionDTO;
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
-import com.kafu.kafu.problem.dto.RealFieldsDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,10 +34,9 @@ public class ProblemController {
         return ResponseEntity.ok(ProblemMapper.toDTO(problemService.create(problemDTO)));
     }
 
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProblemDTO> update(@PathVariable Long id, @Valid @RequestBody ProblemDTO problemDTO) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.update(id, problemDTO)));
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProblemDTO> patch(@PathVariable Long id, @Valid @RequestBody ProblemDTO problemDTO) {
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.patch(id, problemDTO)));
     }
 
     @DeleteMapping("/{id}")
@@ -49,32 +45,8 @@ public class ProblemController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/approve")
-    public ResponseEntity<ProblemDTO> approve(@PathVariable Long id) {
-        problemService.approve(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}/real-fields")
-    public ResponseEntity<ProblemDTO> updateRealFields(@PathVariable Long id, @RequestBody RealFieldsDTO realFieldsDTO) {
-        problemService.updateRealFields(id, realFieldsDTO);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}/reject")
-    public ResponseEntity<ProblemDTO> reject(@PathVariable Long id, @Valid @RequestBody ProblemRejectionDTO rejectionDTO) {
-        problemService.reject(id, rejectionDTO);
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/{id}/details")
-    public ResponseEntity<ProblemDTO> updateDetails(@PathVariable Long id, @RequestBody ProblemDetailsDTO detailsDTO) {
-        problemService.updateDetails(id, detailsDTO);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/by-user/{userId}")
-    public ResponseEntity<List<ProblemDTO>> findByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(problemService.findBySubmittedByUserId(userId).stream().map(ProblemMapper::toDTO).toList());
+    @GetMapping("/me")
+    public ResponseEntity<List<ProblemDTO>> findByUserId() {
+        return ResponseEntity.ok(problemService.findProblemsForCurrentUser().stream().map(ProblemMapper::toDTO).toList());
     }
 }

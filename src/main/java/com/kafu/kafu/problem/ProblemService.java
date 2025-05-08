@@ -2,13 +2,13 @@ package com.kafu.kafu.problem;
 
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.address.AddressService;
-import com.kafu.kafu.problem.dto.ProblemDetailsDTO;
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.dto.ProblemDTO;
-import com.kafu.kafu.problem.dto.ProblemRejectionDTO;
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
-import com.kafu.kafu.problem.dto.RealFieldsDTO;
 import com.kafu.kafu.problemcategory.ProblemCategory;
 import com.kafu.kafu.problemcategory.ProblemCategoryService;
+import com.kafu.kafu.user.User;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -119,69 +119,178 @@ public class ProblemService {
         }
     }
 
+//    @Transactional
+//    public Problem approve(Long id) {
+//        Problem problem = findById(id);
+//
+//        if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending problems can be approved");
+//        }
+//
+//        problem.setApprovedByUser(userService.getCurrentUser());
+//        problem.setStatus(ProblemStatus.APPROVED);
+//
+//        problem = problemRepository.save(problem);
+//        return problem;
+//    }
+//
+//    @Transactional
+//    public Problem reject(Long id, ProblemRejectionDTO rejectionDTO) {
+//        Problem problem = findById(id);
+//
+//        if(rejectionDTO.getIsReal())
+//        {
+//            throw new RuntimeException("is real field must be set to false");
+//        }
+//
+//        if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending problems can be rejected");
+//        }
+//
+//        problem.setIsReal(false);
+//        problem.setRejectionReason(rejectionDTO.getRejectionReason());
+//        problem.setStatus(ProblemStatus.REJECTED);
+//
+//        problem.setApprovedByUser(userService.getCurrentUser());
+//        problem = problemRepository.save(problem);
+//        return problem;
+//    }
+//
+//    @Transactional
+//    public Problem updateRealFields(Long id, RealFieldsDTO dto) {
+//        //set approved here
+//        Problem problem = findById(id);
+//        if (dto.getIsReal() != null) problem.setIsReal(dto.getIsReal());
+//        if (dto.getForContribution() != null) problem.setForContribution(dto.getForContribution());
+//        if (dto.getForDonation() != null) problem.setForDonation(dto.getForDonation());
+//
+//        problem.setApprovedByUser(userService.getCurrentUser());
+//
+//        problem = problemRepository.save(problem);
+//        return problem;
+//    }
+//
+//    @Transactional
+//    public Problem updateDetails(Long id, ProblemDetailsDTO dto) {
+//        Problem problem = findById(id);
+//        if (dto.getTitle() != null) problem.setTitle(dto.getTitle());
+//        if (dto.getDescription() != null) problem.setDescription(dto.getDescription());
+//        if (dto.getAddressId() != null) problem.setAddress(addressService.findById(dto.getAddressId()));
+//        if (dto.getCategoryId() != null && problem.getStatus() == ProblemStatus.PENDING_APPROVAL) problem.setCategory(problemCategoryService.findById(dto.getCategoryId()));
+//        problem = problemRepository.save(problem);
+//        return problem;
+//    }
+
     @Transactional
-    public Problem approve(Long id) {
+    public Problem patch(Long id, ProblemDTO problemDTO) {
         Problem problem = findById(id);
-        
+        User currentUser = userService.getCurrentUser();
+
+        // Check if the user has permission to update this problem
+        validateUserPermission(problem, currentUser);
+
+        // Handle status-based updates
+        if (problemDTO.getStatus() != null) {
+            handleStatusUpdate(problem, problemDTO, currentUser);
+        }
+
+        // Handle real fields update
+        if (problemDTO.getIsReal() != null || 
+            problemDTO.getForContribution() != null || 
+            problemDTO.getForDonation() != null) {
+            handleRealFieldsUpdate(problem, problemDTO);
+        }
+
+        // Handle basic details update
+        handleDetailsUpdate(problem, problemDTO);
+
+        return problemRepository.save(problem);
+    }
+
+    private void validateUserPermission(Problem problem, User currentUser) {
+//        boolean isAdmin = // admin check logic
+//        boolean isOwner = problem.getSubmittedByUser().getId().equals(currentUser.getId());
+//
+//        if (!isAdmin && !isOwner) {
+//            throw new BusinessException(ApplicationErrorEnum.UNAUTHORIZED_ACTION);
+//        }
+    }
+
+    private void handleStatusUpdate(Problem problem, ProblemDTO problemDTO, User currentUser) {
+        if (problemDTO.getStatus() == null) return;
+
+        switch (problemDTO.getStatus()) {
+            case APPROVED -> {
+                if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                }
+                problem.setStatus(ProblemStatus.APPROVED);
+                problem.setApprovedByUser(currentUser);
+            }
+            case REJECTED -> {
+                if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                }
+                if (problemDTO.getRejectionReason() == null || problemDTO.getRejectionReason().trim().isEmpty()) {
+                    throw new BusinessException(ApplicationErrorEnum.REJECTION_REASON_REQUIRED);
+                }
+                problem.setStatus(ProblemStatus.REJECTED);
+                problem.setRejectionReason(problemDTO.getRejectionReason());
+                problem.setApprovedByUser(currentUser);
+            }
+            case IN_PROGRESS -> {
+                if (problem.getStatus() != ProblemStatus.APPROVED) {
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                }
+                problem.setStatus(ProblemStatus.IN_PROGRESS);
+            }
+            case RESOLVED -> {
+                if (problem.getStatus() != ProblemStatus.IN_PROGRESS) {
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                }
+                problem.setStatus(ProblemStatus.RESOLVED);
+            }
+            default -> throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+        }
+    }
+
+    private void handleRealFieldsUpdate(Problem problem, ProblemDTO problemDTO) {
         if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending problems can be approved");
+            throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
         }
 
-        problem.setApprovedByUser(userService.getCurrentUser());
-        problem.setStatus(ProblemStatus.APPROVED);
-
-        problem = problemRepository.save(problem);
-        return problem;
+        if (problemDTO.getIsReal() != null) {
+            problem.setIsReal(problemDTO.getIsReal());
+        }
+        if (problemDTO.getForContribution() != null) {
+            problem.setForContribution(problemDTO.getForContribution());
+        }
+        if (problemDTO.getForDonation() != null) {
+            problem.setForDonation(problemDTO.getForDonation());
+        }
     }
 
-    @Transactional
-    public Problem reject(Long id, ProblemRejectionDTO rejectionDTO) {
-        Problem problem = findById(id);
-
-        if(rejectionDTO.getIsReal())
-        {
-            throw new RuntimeException("is real field must be set to false");
-        }
-
+    private void handleDetailsUpdate(Problem problem, ProblemDTO problemDTO) {
         if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending problems can be rejected");
+            throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
         }
 
-        problem.setIsReal(false);
-        problem.setRejectionReason(rejectionDTO.getRejectionReason());
-        problem.setStatus(ProblemStatus.REJECTED);
-
-        problem.setApprovedByUser(userService.getCurrentUser());
-        problem = problemRepository.save(problem);
-        return problem;
+        if (problemDTO.getTitle() != null) {
+            problem.setTitle(problemDTO.getTitle());
+        }
+        if (problemDTO.getDescription() != null) {
+            problem.setDescription(problemDTO.getDescription());
+        }
+        if (problemDTO.getAddressId() != null) {
+            problem.setAddress(addressService.findById(problemDTO.getAddressId()));
+        }
+        if (problemDTO.getCategoryId() != null) {
+            problem.setCategory(problemCategoryService.findById(problemDTO.getCategoryId()));
+        }
     }
 
-    @Transactional
-    public Problem updateRealFields(Long id, RealFieldsDTO dto) {
-        //set approved here
-        Problem problem = findById(id);
-        if (dto.getIsReal() != null) problem.setIsReal(dto.getIsReal());
-        if (dto.getForContribution() != null) problem.setForContribution(dto.getForContribution());
-        if (dto.getForDonation() != null) problem.setForDonation(dto.getForDonation());
-
-        problem.setApprovedByUser(userService.getCurrentUser());
-
-        problem = problemRepository.save(problem);
-        return problem;
-    }
-
-    @Transactional
-    public Problem updateDetails(Long id, ProblemDetailsDTO dto) {
-        Problem problem = findById(id);
-        if (dto.getTitle() != null) problem.setTitle(dto.getTitle());
-        if (dto.getDescription() != null) problem.setDescription(dto.getDescription());
-        if (dto.getAddressId() != null) problem.setAddress(addressService.findById(dto.getAddressId()));
-        if (dto.getCategoryId() != null && problem.getStatus() == ProblemStatus.PENDING_APPROVAL) problem.setCategory(problemCategoryService.findById(dto.getCategoryId()));
-        problem = problemRepository.save(problem);
-        return problem;
-    }
-
-    public List<Problem> findBySubmittedByUserId(Long userId) {
+    public List<Problem> findProblemsForCurrentUser() {
+        Long userId = userService.getCurrentUser().getId();
         return problemRepository.findBySubmittedByUser_Id(userId);
     }
 }

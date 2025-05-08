@@ -19,4 +19,7 @@ public class ProblemSearchCriteria {
 
     @Min(1) @Max(1000)
     private Long categoryId;
+    // Add new fields for gov search
+    private Long govId;
+    private String govName;
 }

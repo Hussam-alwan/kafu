@@ -42,6 +42,22 @@ public class ProblemSpecification {
                 predicate = cb.and(predicate, cb.equal(categoryJoin.get("id"), criteria.getCategoryId()));
             }
 
+            // Add gov search criteria
+            if (criteria.getGovId() != null) {
+                Join<Object, Object> categoryJoin = root.join("category");
+                Join<Object, Object> govJoin = categoryJoin.join("gov");
+                predicate = cb.and(predicate, cb.equal(govJoin.get("id"), criteria.getGovId()));
+            }
+
+            if (criteria.getGovName() != null && !criteria.getGovName().trim().isEmpty()) {
+                Join<Object, Object> categoryJoin = root.join("category");
+                Join<Object, Object> govJoin = categoryJoin.join("gov");
+                String searchPattern = "%" + criteria.getGovName().toLowerCase() + "%";
+                predicate = cb.and(predicate,
+                    cb.like(cb.lower(govJoin.get("name")), searchPattern)
+                );
+            }
+
             return predicate;
         };
     }

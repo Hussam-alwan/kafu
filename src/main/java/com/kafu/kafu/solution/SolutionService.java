@@ -2,11 +2,8 @@ package com.kafu.kafu.solution;
 
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.solution.dto.SolutionDTO;
-import com.kafu.kafu.solution.dto.SolutionSearchCriteria;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,19 +17,12 @@ public class SolutionService {
     private final ProblemService problemService;
     private final UserService userService;
 
-//    public Page<Solution> findAll(Pageable pageable) {
-//        return solutionRepository.findAll(pageable);
-//    }
-
-    public Page<Solution> search(SolutionSearchCriteria criteria, Pageable pageable) {
-        return solutionRepository.findAll(SolutionSpecification.withSearchCriteria(criteria), pageable);
-    }
-
     public Solution findById(Long id) {
         return solutionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
     }
 
-    public List<Solution> findByProposedByUserId(Long userId) {
+    public List<Solution> findSolutionsProposedByCurrentUser() {
+        Long userId = userService.getCurrentUser().getId();
         return solutionRepository.findByProposedByUserId_Id(userId);
     }
 

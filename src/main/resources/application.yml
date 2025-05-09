@@ -46,3 +46,13 @@ jwt:
       principle-attribute: preferred_username
 
 
+aws:
+  accessKeyId: ${AWS_ACCESS_KEY_ID}
+  secretKey: ${AWS_SECRET_KEY}
+  region: ${AWS_REGION}
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    maxFileSize: 10485760  # 10MB in bytes
+    allowedFileTypes: image/jpeg,image/png,image/jpg
+
+

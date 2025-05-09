@@ -12,7 +12,7 @@ CREATE TABLE Gov (
     id bigint PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(100) NOT NULL,
-    logo_url VARCHAR(255),
+    logo_url VARCHAR(1024),
     address_id bigint,
 	phone varchar(20),
     parent_gov_id bigint,
@@ -30,8 +30,8 @@ CREATE TABLE Users (
 	date_of_birth DATE,
     college_degree VARCHAR(100),
     job VARCHAR(50),
-    cv_url VARCHAR(255),
-    photo_url VARCHAR(255),
+    cv_url VARCHAR(1024),
+    photo_url VARCHAR(1024),
     description TEXT,
     address_id bigint,
 	gov_id bigint,
@@ -75,7 +75,7 @@ CREATE TABLE Problem (
 CREATE TABLE Problem_Photo (
     id bigint PRIMARY KEY,
     problem_id bigint NOT NULL,
-    photo_url VARCHAR(255) NOT NULL,
+    s3_Key VARCHAR(1024) NOT NULL,
     photo_date TIMESTAMP NOT NULL,
     progress_id bigint,
     FOREIGN KEY (problem_id) REFERENCES Problem(id)

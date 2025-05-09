@@ -31,16 +31,6 @@ public class ProblemProgressController {
         return ResponseEntity.ok(ProblemProgressMapper.toDTO(problemProgressService.create(progressDTO)));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> update(
-            @PathVariable Long problemId,
-            @PathVariable Long id,
-            @Valid @RequestBody ProblemProgressDTO progressDTO) {
-        progressDTO.setProblemId(problemId);
-        problemProgressService.update(id, progressDTO);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long problemId, @PathVariable Long id) {
         problemProgressService.deleteByIdAndProblemId(id, problemId);

@@ -1,8 +1,6 @@
 package com.kafu.kafu.problemprogress;
 
 import com.kafu.kafu.problem.ProblemService;
-import com.kafu.kafu.problemphoto.ProblemPhoto;
-import com.kafu.kafu.problemphoto.ProblemPhotoService;
 import com.kafu.kafu.problemprogress.dto.ProblemProgressDTO;
 import com.kafu.kafu.solution.SolutionService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,6 @@ public class ProblemProgressService {
     private final ProblemProgressRepository problemProgressRepository;
     private final ProblemService problemService;
     private final SolutionService solutionService;
-    private final ProblemPhotoService problemPhotoService;
 
     public List<ProblemProgress> findByProblemId(Long problemId) {
         return problemProgressRepository.findByProblemId(problemId);
@@ -63,39 +60,10 @@ public class ProblemProgressService {
         progress.setProgressDate(LocalDateTime.now());
         
         progress = problemProgressRepository.save(progress);
-        
-        if (dto.getPhotoIds() != null && !dto.getPhotoIds().isEmpty()) {
-            for (Long photoId : dto.getPhotoIds()) {
-                ProblemPhoto photo = problemPhotoService.findById(photoId);
-                photo.setProgress(progress);
-                progress.getPhotos().add(photo);
-            }
-        }
-        
         return progress;
     }
 
-    @Transactional
-    public ProblemProgress update(Long id, ProblemProgressDTO dto) {
-        ProblemProgress progress = findById(id);
-        progress.setPercentage(dto.getPercentage());
-        progress.setComment(dto.getComment());
-        
-        if (dto.getPhotoIds() != null) {
-            // Clear existing photos
-            progress.getPhotos().forEach(photo -> photo.setProgress(null));
-            progress.getPhotos().clear();
-            
-            // Add new photos
-            for (Long photoId : dto.getPhotoIds()) {
-                ProblemPhoto photo = problemPhotoService.findById(photoId);
-                photo.setProgress(progress);
-                progress.getPhotos().add(photo);
-            }
-        }
-        
-        return problemProgressRepository.save(progress);
-    }
+
 
     @Transactional
     public void delete(Long id) {

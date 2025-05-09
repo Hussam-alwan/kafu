@@ -77,6 +77,7 @@ CREATE TABLE Problem_Photo (
     problem_id bigint NOT NULL,
     photo_url VARCHAR(255) NOT NULL,
     photo_date TIMESTAMP NOT NULL,
+    progress_id bigint,
     FOREIGN KEY (problem_id) REFERENCES Problem(id)
 );
 
@@ -121,11 +122,13 @@ CREATE TABLE Problem_Progress (
     percentage INT NOT NULL CHECK (percentage BETWEEN 0 AND 100),
     comment TEXT NOT NULL,
     progress_date TIMESTAMP NOT NULL,
-    problem_id INT NOT NULL,
-    solution_id INT NOT NULL,
+    problem_id bigint NOT NULL,
+    solution_id bigint NOT NULL,
     FOREIGN KEY (problem_id) REFERENCES Problem(id),
     FOREIGN KEY (solution_id) REFERENCES Solution(id)
 );
+
+ALTER TABLE problem_photo ADD CONSTRAINT fk_progress_id FOREIGN KEY (progress_id) REFERENCES Problem_Progress(id);
 
 create sequence address_seq start with 1 increment by 50;
 create sequence donation_seq start with 1 increment by 50;

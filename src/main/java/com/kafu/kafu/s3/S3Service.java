@@ -13,7 +13,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
-import java.net.URL;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -55,15 +54,6 @@ public class S3Service {
         return presignedRequest.url().toString();
     }
 
-    // Add method to get permanent object URL
-    public String getObjectUrl(String key) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", 
-            bucketName, 
-            s3Client.serviceClientConfiguration().region(), 
-            key);
-    }
-
-    // Add method to generate presigned GET URL when needed
     public String generatePresignedGetUrl(String key) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
             .bucket(bucketName)
@@ -79,64 +69,6 @@ public class S3Service {
             .url()
             .toString();
     }
-
-//    // Extract key from URL
-//    public String extractKeyFromUrl(String url) {
-//        try {
-//            URL parsedUrl = new URL(url);
-//            return parsedUrl.getPath().substring(1); // Remove leading '/'
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid S3 URL");
-//        }
-//    }
-
-    public boolean validatePresignedUrl(String presignedUrl) {
-        try {
-            URL url = new URL(presignedUrl);
-            String host = url.getHost();
-            String path = url.getPath();
-            
-            // Check basic structure
-            if (!host.contains(bucketName) || !host.contains("amazonaws.com")) {
-                return false;
-            }
-            
-            // Validate path structure
-            if (!path.startsWith("/problems/")) {
-                return false;
-            }
-            
-            // Check for UUID pattern in the path
-            String[] pathParts = path.split("/");
-            if (pathParts.length != 3) { // Should be ["", "problems", "uuid"]
-                return false;
-            }
-            
-            // Validate UUID format
-            try {
-                UUID.fromString(pathParts[2]);
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-            
-            // Validate protocol
-            if (!url.getProtocol().equals("https")) {
-                return false;
-            }
-            
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-//    public List<String> generateMultiplePresignedUrls(String contentType, int count) {
-//        List<String> urls = new ArrayList<>();
-//        for (int i = 0; i < count; i++) {
-//            urls.add(generatePresignedUrl(contentType));
-//        }
-//        return urls;
-//    }
 
     private void validateFileType(String contentType) {
         List<String> allowed = Arrays.asList(allowedFileTypes.split(","));

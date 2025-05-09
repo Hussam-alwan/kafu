@@ -84,11 +84,11 @@ BEGIN
     JOIN Users u ON u.id = 1 + ((i-1) * 50);
 
     -- Populate Problem_Photo (50 records)
-    INSERT INTO Problem_Photo (id, problem_id, photo_url, photo_date)
+    INSERT INTO Problem_Photo (id, problem_id, s3_Key, photo_date)
     SELECT
         nextval('problem_photo_seq'),
         p.id,
-        'https://photos.example.com/problem/' || i || '.jpg',
+        'problem/' || i ,
         now() - (i || ' hours')::interval
     FROM generate_series(1, 50) i
     JOIN Problem p ON p.id = 1 + ((i-1) * 50);

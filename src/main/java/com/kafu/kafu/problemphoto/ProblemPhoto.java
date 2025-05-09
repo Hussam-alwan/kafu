@@ -1,6 +1,7 @@
 package com.kafu.kafu.problemphoto;
 
 import com.kafu.kafu.problem.Problem;
+import com.kafu.kafu.problemprogress.ProblemProgress;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -22,4 +23,8 @@ public class ProblemPhoto {
 
     @Column(name = "photo_date", nullable = false)
     private LocalDateTime photoDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "progress_id")
+    private ProblemProgress progress;
 }

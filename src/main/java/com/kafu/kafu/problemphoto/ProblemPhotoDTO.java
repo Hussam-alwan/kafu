@@ -16,4 +16,6 @@ public class ProblemPhotoDTO {
     private String photoUrl;
 
     private LocalDateTime photoDate;
+    
+    private Long progressId;
 }

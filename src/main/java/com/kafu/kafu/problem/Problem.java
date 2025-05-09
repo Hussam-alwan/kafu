@@ -2,10 +2,14 @@ package com.kafu.kafu.problem;
 
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.problemcategory.ProblemCategory;
+import com.kafu.kafu.problemphoto.ProblemPhoto;
+import com.kafu.kafu.problemprogress.ProblemProgress;
 import com.kafu.kafu.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "problem")
@@ -57,4 +61,11 @@ public class Problem {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private ProblemCategory category;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "problem")
+    private List<ProblemPhoto> problemPhotos = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "problem")
+    private List<ProblemProgress> problemProgresses = new ArrayList<>();
+
 }

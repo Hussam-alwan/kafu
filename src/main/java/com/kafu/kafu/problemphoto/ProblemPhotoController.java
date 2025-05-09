@@ -2,46 +2,54 @@ package com.kafu.kafu.problemphoto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/problem-photos")
+@RequestMapping("/api/v1/problem/{problemId}/photos")
 @RequiredArgsConstructor
 public class ProblemPhotoController {
     private final ProblemPhotoService problemPhotoService;
 
     @GetMapping
-    public ResponseEntity<Page<ProblemPhotoDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(problemPhotoService.findAll(pageable));
-    }
-
-    @GetMapping("/by-problem/{problemId}")
     public ResponseEntity<List<ProblemPhotoDTO>> findByProblemId(@PathVariable Long problemId) {
-        return ResponseEntity.ok(problemPhotoService.findByProblemId(problemId));
+        List<ProblemPhoto> photos = problemPhotoService.findByProblemId(problemId);
+        return ResponseEntity.ok(photos.stream().map(ProblemPhotoMapper::toDTO).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProblemPhotoDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(problemPhotoService.findById(id));
+    public ResponseEntity<ProblemPhotoDTO> findById(
+            @PathVariable Long problemId,
+            @PathVariable Long id) {
+        ProblemPhoto photo = problemPhotoService.findById(id);
+        return ResponseEntity.ok(ProblemPhotoMapper.toDTO(photo));
     }
 
     @PostMapping
-    public ResponseEntity<ProblemPhotoDTO> create(@Valid @RequestBody ProblemPhotoDTO problemPhotoDTO) {
-        return ResponseEntity.ok(problemPhotoService.create(problemPhotoDTO));
+    public ResponseEntity<ProblemPhotoDTO> create(
+            @PathVariable Long problemId,
+            @Valid @RequestBody ProblemPhotoDTO problemPhotoDTO) {
+        problemPhotoDTO.setProblemId(problemId);
+        ProblemPhoto created = problemPhotoService.create(problemPhotoDTO);
+        return ResponseEntity.ok(ProblemPhotoMapper.toDTO(created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProblemPhotoDTO> update(@PathVariable Long id, @Valid @RequestBody ProblemPhotoDTO problemPhotoDTO) {
-        return ResponseEntity.ok(problemPhotoService.update(id, problemPhotoDTO));
+    public ResponseEntity<ProblemPhotoDTO> update(
+            @PathVariable Long problemId,
+            @PathVariable Long id,
+            @Valid @RequestBody ProblemPhotoDTO problemPhotoDTO) {
+        problemPhotoDTO.setProblemId(problemId);
+        ProblemPhoto updated = problemPhotoService.update(id, problemPhotoDTO);
+        return ResponseEntity.ok(ProblemPhotoMapper.toDTO(updated));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        problemPhotoService.delete(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable Long problemId,
+            @PathVariable Long id) {
+        problemPhotoService.deleteByIdAndProblemId(id, problemId);
         return ResponseEntity.ok().build();
     }
 }

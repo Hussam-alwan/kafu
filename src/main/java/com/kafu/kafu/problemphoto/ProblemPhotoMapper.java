@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ProblemPhotoMapper {
     private final ProblemService problemService;
 
-    public ProblemPhotoDTO toDTO(ProblemPhoto entity) {
+    public static ProblemPhotoDTO toDTO(ProblemPhoto entity) {
         if (entity == null) {
             return null;
         }

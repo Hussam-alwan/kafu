@@ -1,78 +1,73 @@
 package com.kafu.kafu.problemphoto;
 
+import com.kafu.kafu.problem.Problem;
 import com.kafu.kafu.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProblemPhotoService {
     private final ProblemPhotoRepository problemPhotoRepository;
-    private final ProblemPhotoMapper problemPhotoMapper;
     private final ProblemService problemService;
 
-    public Page<ProblemPhotoDTO> findAll(Pageable pageable) {
-        return problemPhotoRepository.findAll(pageable)
-                .map(problemPhotoMapper::toDTO);
+    public List<ProblemPhoto> findByProblemId(Long problemId) {
+        return problemPhotoRepository.findByProblemId(problemId);
     }
 
-    public List<ProblemPhotoDTO> findByProblemId(Long problemId) {
-        return problemPhotoRepository.findByProblemId(problemId)
-                .stream()
-                .map(problemPhotoMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public ProblemPhotoDTO findById(Long id) {
-        return problemPhotoRepository.findById(id)
-                .map(problemPhotoMapper::toDTO)
+    public ProblemPhoto findById(Long id) {
+        ProblemPhoto photo = problemPhotoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem photo not found"));
+        return photo;
+    }
+
+    public void validateProblemId(ProblemPhoto photo, Long problemId) {
+        if (!photo.getProblem().getId().equals(problemId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem photo not found for this problem");
+        }
+    }
+
+    public ProblemPhoto findByIdAndValidateProblem(Long id, Long problemId) {
+        ProblemPhoto photo = findById(id);
+        validateProblemId(photo, problemId);
+        return photo;
     }
 
     @Transactional
-    public ProblemPhotoDTO create(ProblemPhotoDTO problemPhotoDTO) {
-        if (problemPhotoDTO.getId() != null) {
+    public ProblemPhoto create(ProblemPhotoDTO dto) {
+        if (dto.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new problem photo cannot already have an ID");
         }
 
-        // Verify that the problem exists
-        problemService.findById(problemPhotoDTO.getProblemId());
-
-        problemPhotoDTO.setPhotoDate(LocalDateTime.now());
+        Problem problem = problemService.findById(dto.getProblemId());
         
-        ProblemPhoto problemPhoto = problemPhotoMapper.toEntity(problemPhotoDTO);
-        problemPhoto = problemPhotoRepository.save(problemPhoto);
-        return problemPhotoMapper.toDTO(problemPhoto);
+        ProblemPhoto photo = new ProblemPhoto();
+        photo.setProblem(problem);
+        photo.setPhotoUrl(dto.getPhotoUrl());
+        photo.setPhotoDate(LocalDateTime.now());
+        
+        return problemPhotoRepository.save(photo);
     }
 
     @Transactional
-    public ProblemPhotoDTO update(Long id, ProblemPhotoDTO problemPhotoDTO) {
-        ProblemPhoto problemPhoto = problemPhotoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem photo not found"));
-
-        // Verify that the problem exists if it's being updated
-        if (problemPhotoDTO.getProblemId() != null) {
-            problemService.findById(problemPhotoDTO.getProblemId());
+    public ProblemPhoto update(Long id, ProblemPhotoDTO dto) {
+        ProblemPhoto photo = findByIdAndValidateProblem(id, dto.getProblemId());
+        
+        if (dto.getPhotoUrl() != null) {
+            photo.setPhotoUrl(dto.getPhotoUrl());
         }
-
-        problemPhotoMapper.updateEntity(problemPhoto, problemPhotoDTO);
-        problemPhoto = problemPhotoRepository.save(problemPhoto);
-        return problemPhotoMapper.toDTO(problemPhoto);
+        
+        return problemPhotoRepository.save(photo);
     }
 
     @Transactional
-    public void delete(Long id) {
-        problemPhotoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem photo not found"));
-        
-        problemPhotoRepository.deleteById(id);
+    public void deleteByIdAndProblemId(Long id, Long problemId) {
+        ProblemPhoto photo = findByIdAndValidateProblem(id, problemId);
+        problemPhotoRepository.delete(photo);
     }
 }

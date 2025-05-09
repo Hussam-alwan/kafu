@@ -1,5 +1,6 @@
 package com.kafu.kafu.problemphoto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -13,9 +14,12 @@ public class ProblemPhotoDTO {
     private Long problemId;
 
     @NotBlank(message = "Photo URL is required")
-    private String photoUrl;
+    private String s3Key;
 
     private LocalDateTime photoDate;
     
     private Long progressId;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String presignedUrl;
 }

@@ -17,7 +17,7 @@ public class ProblemPhotoMapper {
         ProblemPhotoDTO dto = new ProblemPhotoDTO();
         dto.setId(entity.getId());
         dto.setProblemId(entity.getProblem().getId());
-        dto.setPhotoUrl(entity.getPhotoUrl());
+        dto.setS3Key(entity.getS3Key());
         dto.setPhotoDate(entity.getPhotoDate());
         return dto;
     }
@@ -40,8 +40,8 @@ public class ProblemPhotoMapper {
         if (dto.getProblemId() != null) {
             entity.setProblem(problemService.findById(dto.getProblemId()));
         }
-        if (dto.getPhotoUrl() != null) {
-            entity.setPhotoUrl(dto.getPhotoUrl());
+        if (dto.getS3Key() != null) {
+            entity.setS3Key(dto.getS3Key());
         }
         if (dto.getPhotoDate() != null) {
             entity.setPhotoDate(dto.getPhotoDate());

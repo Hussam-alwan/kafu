@@ -6,5 +6,6 @@ import java.util.List;
 
 @Repository
 public interface ProblemPhotoRepository extends JpaRepository<ProblemPhoto, Long> {
-    List<ProblemPhoto> findByProblemId(Long problemId);
+    List<ProblemPhoto> findByProblem_Id(Long problemId);
+    void deleteByProblem_Id(Long problemId);
 }

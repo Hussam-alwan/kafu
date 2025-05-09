@@ -18,13 +18,13 @@ public class ProblemPhoto {
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
-    @Column(name = "photo_url", nullable = false, length = 255)
-    private String photoUrl;
+    @Column(name = "s3_Key", nullable = false, length = 1024)
+    private String s3Key;
 
     @Column(name = "photo_date", nullable = false)
     private LocalDateTime photoDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "progress_id")
     private ProblemProgress progress;
 }

@@ -56,7 +56,7 @@ CREATE TABLE Users (
 
 -- 4. ProblemCategory Table
 CREATE TABLE Problem_Category (
-    category_id bigint PRIMARY KEY,
+    id bigint PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     gov_id bigint NOT NULL,
     FOREIGN KEY (gov_id) REFERENCES Gov(id)
@@ -80,7 +80,7 @@ CREATE TABLE Problem (
     FOREIGN KEY (submitted_by_user_id) REFERENCES Users(id),
     FOREIGN KEY (approved_by_user_id) REFERENCES Users(id),
     FOREIGN KEY (address_id) REFERENCES Address(id),
-	FOREIGN KEY (category_id) REFERENCES Problem_Category(category_id)
+	FOREIGN KEY (category_id) REFERENCES Problem_Category(id)
 );
 
 -- 6. ProblemPhoto Table

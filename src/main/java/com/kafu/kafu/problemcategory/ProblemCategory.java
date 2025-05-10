@@ -10,7 +10,7 @@ import lombok.Data;
 public class ProblemCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "category_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(nullable = false, length = 50, unique = true)

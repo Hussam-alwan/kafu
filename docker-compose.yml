@@ -10,10 +10,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
-    networks:
-      - kafu-network
+    network_mode: "service:localhost"
     restart: unless-stopped
     healthcheck:
       test: "exit 0"
@@ -27,10 +24,7 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - kafu-network
+    network_mode: "service:localhost"
     restart: unless-stopped
     depends_on:
       - postgresql
@@ -49,10 +43,10 @@ services:
       KC_DB_PASSWORD: password
       KC_DB_SCHEMA: public
 
-    networks:
-      - kafu-network
-    ports:
-      - "9098:8080"
+      KC_HTTP_PORT: 9098
+      KC_HTTPS_PORT: 9098
+
+    network_mode: "service:localhost"
     depends_on:
       postgresql:
         condition: service_healthy
@@ -64,29 +58,37 @@ services:
   kafu-app:
     build: .
     container_name: kafu-app
-    ports:
-      - "8080:8080"
-    networks:
-      - kafu-network
+    network_mode: "service:localhost"
     depends_on:
       - postgresql
       - keycloak
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/kafu
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/kafu
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080
+      KEYCLOAK_AUTH_SERVER_URL: http://localhost:9098
       KEYCLOAK_CLIENT_SECRET: my-super-secret-client-secret
       SWAGGER_AUTH_SERVER_URL: http://localhost:9098
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
       AWS_REGION: ${AWS_REGION}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+
+  localhost:
+    container_name: localhost
+    image: alpine:3.14
+    command: sleep infinity
+    ports:
+      - "9098:9098" # Keycloak port
+      - "8080:8080" # spring boot
+      - "5432:5432"  # PostgreSQL
+      - "5050:80"    # pgAdmin
+
 volumes:
   postgres:
   pgadmin:
   keycloak:
 
-networks:
-  kafu-network:
+#networks:
+#  kafu-network:

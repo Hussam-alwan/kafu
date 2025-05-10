@@ -3,12 +3,11 @@ package com.kafu.kafu.gov;
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.address.AddressService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -16,8 +15,8 @@ public class GovService {
     private final GovRepository govRepository;
     private final AddressService addressService;
 
-    public Page<Gov> findAll(Pageable pageable) {
-        return govRepository.findAll(pageable);
+    public List<Gov> findAll() {
+        return govRepository.findAll();
     }
 
     public Gov findById(Long id) {

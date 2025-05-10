@@ -2,12 +2,11 @@ package com.kafu.kafu.gov;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/govs")
@@ -16,8 +15,8 @@ public class GovController {
     private final GovService govService;
 
     @GetMapping
-    public ResponseEntity<Page<GovDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(govService.findAll(pageable).map(GovMapper::toDTO));
+    public ResponseEntity<List<GovDTO>> findAll() {
+        return ResponseEntity.ok(govService.findAll().stream().map(GovMapper::toDTO).toList());
     }
 
     @GetMapping("/{id}")

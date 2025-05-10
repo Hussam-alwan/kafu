@@ -52,7 +52,7 @@ BEGIN
     JOIN Gov g ON g.id = 1 + ((i-1) * 50);
 
     -- Populate Problem_Category (50 records)
-    INSERT INTO Problem_Category (category_id, name, gov_id)
+    INSERT INTO Problem_Category (id, name, gov_id)
     SELECT
         nextval('problem_category_seq'),
         'Category ' || (i % 5 + 1) || '-' || i,
@@ -76,11 +76,11 @@ BEGIN
         CASE WHEN i % 4 = 0 THEN NULL ELSE (SELECT id FROM Users ORDER BY random() LIMIT 1) END,
         CASE WHEN i % 10 = 0 THEN 'Duplicate entry' ELSE NULL END,
         a.id,
-        pc.category_id,
+        pc.id,
         (ARRAY['PENDING_APPROVAL','APPROVED','REJECTED','IN_PROGRESS','RESOLVED'])[(i % 5) + 1]
     FROM generate_series(1, 50) i
     JOIN Address a ON a.id = 1 + ((i-1) * 50)
-    JOIN Problem_Category pc ON pc.category_id = 1 + ((i-1) * 50)
+    JOIN Problem_Category pc ON pc.id = 1 + ((i-1) * 50)
     JOIN Users u ON u.id = 1 + ((i-1) * 50);
 
     -- Populate Problem_Photo (50 records)

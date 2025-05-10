@@ -82,8 +82,8 @@ public class ProblemCategoryService {
         }
     }
 
-    public Page<ProblemCategory> search(ProblemCategorySearchCriteria criteria, Pageable pageable) {
+    public List<ProblemCategory> search(ProblemCategorySearchCriteria criteria) {
         Specification<ProblemCategory> spec = ProblemCategorySpecification.withSearchCriteria(criteria);
-        return problemCategoryRepository.findAll(spec, pageable);
+        return problemCategoryRepository.findAll(spec);
     }
 }

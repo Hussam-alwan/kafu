@@ -2,15 +2,12 @@ package com.kafu.kafu.problemcategory;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import com.kafu.kafu.problemcategory.dto.ProblemCategorySearchCriteria;
-import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/v1/problem-categories")
@@ -19,11 +16,10 @@ public class ProblemCategoryController {
     private final ProblemCategoryService problemCategoryService;
 
     @GetMapping
-    public ResponseEntity<Page<ProblemCategoryDTO>> search(
-            @ModelAttribute ProblemCategorySearchCriteria criteria,
-            @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(problemCategoryService.search(criteria, pageable)
-                .map(ProblemCategoryMapper::toDTO));
+    public ResponseEntity<List<ProblemCategoryDTO>> search(
+            @ModelAttribute ProblemCategorySearchCriteria criteria) {
+        return ResponseEntity.ok(problemCategoryService.search(criteria).stream()
+                .map(ProblemCategoryMapper::toDTO).toList());
     }
 
     @GetMapping("/by-gov/{govId}")

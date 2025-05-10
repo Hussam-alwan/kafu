@@ -1,3 +1,15 @@
+-- Create Kafu database and user (if not created by Docker)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'kafu') THEN
+        CREATE DATABASE kafu;
+    END IF;
+END
+$$;
+
+-- Switch to kafu database
+\c kafu;
+
 -- 1. Address Table
 CREATE TABLE Address (
     id bigint PRIMARY KEY,

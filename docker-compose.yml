@@ -36,7 +36,6 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HOSTNAME: localhost
-
       KC_DB: postgres
       KC_DB_URL_HOST: localhost
       KC_DB_URL_PORT: 5432
@@ -44,11 +43,8 @@ services:
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
       KC_DB_SCHEMA: public
-
       KC_HTTP_PORT: 9098
       KC_HTTPS_PORT: 9098
-
-
     volumes:
       - keycloak:/opt/keycloak/data
       - ./keycloak/imports:/opt/keycloak/data/import
@@ -91,6 +87,3 @@ volumes:
   postgres:
   pgadmin:
   keycloak:
-
-#networks:
-#  kafu-network:

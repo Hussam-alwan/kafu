@@ -22,7 +22,7 @@ Kafu is a Spring Boot application that implements OAuth2/OpenID Connect authenti
 Start all services using Docker Compose:
 
 ```bash
-   docker compose up -d
+   docker-compose up --build -d
 ```
 
 The following services will be started:
@@ -31,6 +31,17 @@ The following services will be started:
 - PgAdmin4 (Port: 5050)
 - Keycloak (Port: 9098)
 - Kafu Application (Port: 8080)
+
+To stop the services run:
+```bash
+   docker-compose down
+```
+
+To stop the services and delete the volumes run:
+```bash
+   docker-compose down -v
+```
+
 
 ### 4. Access Points
 - Application: http://localhost:8080
@@ -52,7 +63,7 @@ Password:password
 
 Password: admin
 
-host name:postgresql
+host name:localhost
 
 ### Keycloak
 

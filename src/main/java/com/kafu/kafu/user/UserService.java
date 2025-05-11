@@ -30,11 +30,6 @@ public class UserService {
     @Value("${keycloak.realm}")
     private String realm;
 
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
-
-
     public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));

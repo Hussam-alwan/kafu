@@ -1,11 +1,9 @@
 package com.kafu.kafu.user;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,29 +12,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-
-    @GetMapping
-//    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(userService.findAll(pageable).map(UserMapper::toDTO));
-    }
-
     @GetMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(UserMapper.toDTO(userService.findById(id)));
     }
 
-    // this endpoint will not be needed as sign up will be handled by keycloack
-    // and syncing users will be handled by a filter
-//    @PostMapping
-//    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO) {
-//        User user = userService.create(userDTO);
-//        return ResponseEntity.status(201).body(UserMapper.toDTO(user));
-//    }
-
     @PutMapping("/{id}")
-    //    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<UserDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody UserDTO userDTO) {
@@ -45,12 +26,11 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
+    @Operation(summary = "associateUser",description = "add a user to a gov entity")
     @PostMapping("/{userId}/associate-user")
     public ResponseEntity<Void> associateUser(@RequestParam Long govId, @PathVariable Long userId) {
         userService.associateUser(govId, userId);

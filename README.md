@@ -19,6 +19,8 @@ Kafu is a Spring Boot application that implements OAuth2/OpenID Connect authenti
 
 ### 3. Start Services
 
+add a .env file with similar keys as the .env.example and add corresponding values
+
 Start all services using Docker Compose:
 
 ```bash

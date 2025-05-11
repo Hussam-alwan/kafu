@@ -1,5 +1,6 @@
 package com.kafu.kafu.address;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,7 @@ public class AddressController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "getCities",description = "find available cities in the app")
     @GetMapping("/cities")
     public ResponseEntity<List<Map<String, String>>> getCities() {
         return ResponseEntity.ok(addressService.getCities());

@@ -4,8 +4,6 @@ import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
 import com.kafu.kafu.problemcategory.dto.ProblemCategorySearchCriteria;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -18,14 +16,6 @@ import java.util.List;
 public class ProblemCategoryService {
     private final ProblemCategoryRepository problemCategoryRepository;
     private final GovService govService;
-
-    public Page<ProblemCategory> findAll(Pageable pageable) {
-        return problemCategoryRepository.findAll(pageable);
-    }
-
-    public List<ProblemCategory> findByGovId(Long govId) {
-        return problemCategoryRepository.findByGovId(govId).stream().toList();
-    }
 
     public ProblemCategory findById(Long id) {
         return problemCategoryRepository.findById(id)

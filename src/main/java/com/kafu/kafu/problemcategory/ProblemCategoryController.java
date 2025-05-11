@@ -3,7 +3,6 @@ package com.kafu.kafu.problemcategory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
@@ -22,16 +21,6 @@ public class ProblemCategoryController {
                 .map(ProblemCategoryMapper::toDTO).toList());
     }
 
-    @GetMapping("/by-gov/{govId}")
-    public ResponseEntity<List<ProblemCategoryDTO>> findByGovId(@PathVariable Long govId) {
-        return ResponseEntity.ok(problemCategoryService.
-                findByGovId(govId)
-                .stream()
-                .map(ProblemCategoryMapper::toDTO)
-                .toList()
-        );
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ProblemCategoryDTO> findById(@PathVariable Long id) {
         ProblemCategory problemCategory = problemCategoryService.findById(id);
@@ -39,7 +28,6 @@ public class ProblemCategoryController {
     }
 
     @PostMapping
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProblemCategoryDTO> create(@Valid @RequestBody ProblemCategoryDTO problemCategoryDTO) {
         ProblemCategory created = problemCategoryService.create(problemCategoryDTO);
         return ResponseEntity
@@ -48,7 +36,6 @@ public class ProblemCategoryController {
     }
 
     @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProblemCategoryDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody ProblemCategoryDTO problemCategoryDTO) {
@@ -60,7 +47,6 @@ public class ProblemCategoryController {
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         problemCategoryService.delete(id);
         return ResponseEntity.noContent().build();

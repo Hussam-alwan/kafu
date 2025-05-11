@@ -1,5 +1,6 @@
 package com.kafu.kafu.problemphoto;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +35,14 @@ public class ProblemPhotoController {
         ProblemPhoto photo = problemPhotoService.findByIdWithS3Url(id);
         return ResponseEntity.ok(ProblemPhotoMapper.toDTO(photo));
     }
-
+    @Operation(summary = "deleteAllByProblemId",description = "Delete all Photos by problem id")
     @DeleteMapping
     public ResponseEntity<Void> deleteAll(@PathVariable Long problemId) {
         problemPhotoService.deleteAllByProblemId(problemId);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "deleteById",description = "Delete Photo by id")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long problemId,

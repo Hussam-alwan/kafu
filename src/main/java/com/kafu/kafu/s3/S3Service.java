@@ -40,7 +40,6 @@ public class S3Service {
                 .bucket(bucketName)
                 .key(key)
                 .contentType(contentType)
-                .contentLength(maxFileSize)
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
@@ -49,9 +48,8 @@ public class S3Service {
                 .build();
 
         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
-        
-        // Return both the presigned URL and the permanent object key
-        return presignedRequest.url().toString();
+
+        return presignedRequest.url().toExternalForm();
     }
 
     public String generatePresignedGetUrl(String key) {
@@ -67,7 +65,7 @@ public class S3Service {
 
         return s3Presigner.presignGetObject(presignGetRequest)
             .url()
-            .toString();
+            .toExternalForm();
     }
 
     private void validateFileType(String contentType) {

@@ -1,6 +1,7 @@
 package com.kafu.kafu.solution;
 
 import com.kafu.kafu.solution.dto.SolutionDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 public class SolutionController {
     private final SolutionService solutionService;
 
+    @Operation(summary = "findById",description = "find solution by id")
     @GetMapping("/{id}")
     public ResponseEntity<SolutionDTO> findById(@PathVariable Long problemId , @PathVariable Long id) {
         return ResponseEntity.ok(SolutionMapper.toDTO(solutionService.findById(id)));
@@ -26,7 +28,7 @@ public class SolutionController {
                 .toList();
         return ResponseEntity.ok(solutions);
     }
-
+    @Operation(summary = "findByProblemId",description = "find solutions by problem id")
     @GetMapping
     public ResponseEntity<List<SolutionDTO>> findByProblemId(@PathVariable Long problemId) {
         List<SolutionDTO> solutions = solutionService.findByProblemId(problemId)

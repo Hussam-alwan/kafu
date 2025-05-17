@@ -66,7 +66,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       KEYCLOAK_AUTH_SERVER_URL: http://localhost:9098
-      KEYCLOAK_CLIENT_SECRET: my-super-secret-client-secret
+      KEYCLOAK_CLIENT_SECRET: my-spring-client-secret
       SWAGGER_AUTH_SERVER_URL: http://localhost:9098
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}

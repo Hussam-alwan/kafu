@@ -36,8 +36,8 @@ server:
 keycloak:
   auth-server-url: http://localhost:9098
   realm: kafu-realm
-  client-id: kafu-client
-  client-secret: my-super-secret-client-secret
+  client-id: spring-client
+  client-secret: my-spring-client-secret
 
 jwt:
   auth:

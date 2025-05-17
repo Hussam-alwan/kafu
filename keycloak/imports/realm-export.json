@@ -67,7 +67,10 @@
             "uma_authorization"
           ],
           "client": {
-            "kafu-client": [
+            "spring-client": [
+              "ROLE_USER"
+            ],
+            "react-client": [
               "ROLE_USER"
             ],
             "account": [
@@ -91,43 +94,6 @@
       }
     ],
     "client": {
-      "kafu-client": [
-        {
-          "id": "d19a2ff2-0833-4265-97cc-4fcede3d00c5",
-          "name": "ROLE_GOV",
-          "description": "",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
-          "attributes": {}
-        },
-        {
-          "id": "483a36eb-57a5-4b5a-aceb-5a0a5b080642",
-          "name": "ROLE_ADMIN",
-          "description": "",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
-          "attributes": {}
-        },
-        {
-          "id": "912486de-a9af-4300-8a26-df4ea7e4d7b0",
-          "name": "ROLE_USER",
-          "description": "",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
-          "attributes": {}
-        },
-        {
-          "id": "2b1500d8-beda-447b-afd0-c6938c41879c",
-          "name": "uma_protection",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
-          "attributes": {}
-        }
-      ],
       "realm-management": [
         {
           "id": "e05b2c4e-c97d-4bba-a86f-6916943dc0b0",
@@ -354,6 +320,72 @@
           "attributes": {}
         }
       ],
+      "spring-client": [
+        {
+          "id": "d19a2ff2-0833-4265-97cc-4fcede3d00c5",
+          "name": "ROLE_GOV",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
+          "attributes": {}
+        },
+        {
+          "id": "483a36eb-57a5-4b5a-aceb-5a0a5b080642",
+          "name": "ROLE_ADMIN",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
+          "attributes": {}
+        },
+        {
+          "id": "912486de-a9af-4300-8a26-df4ea7e4d7b0",
+          "name": "ROLE_USER",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
+          "attributes": {}
+        },
+        {
+          "id": "2b1500d8-beda-447b-afd0-c6938c41879c",
+          "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "53665d82-6579-499c-b613-3ca9b18a3411",
+          "attributes": {}
+        }
+      ],
+      "react-client": [
+        {
+          "id": "f979acd7-b2b6-4dce-92d5-430603e3ac31",
+          "name": "ROLE_GOV",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "c011d144-84ec-4c8b-a582-c5a53d42b121",
+          "attributes": {}
+        },
+        {
+          "id": "5ad28766-04ae-476f-9731-f8eebbf3eb6a",
+          "name": "ROLE_ADMIN",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "c011d144-84ec-4c8b-a582-c5a53d42b121",
+          "attributes": {}
+        },
+        {
+          "id": "c929ef37-1bf0-4d35-bafd-8b0821f6250e",
+          "name": "ROLE_USER",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "c011d144-84ec-4c8b-a582-c5a53d42b121",
+          "attributes": {}
+        }
+      ],
       "account": [
         {
           "id": "fa2d43d2-3e45-4e29-bcbf-4240efb275ed",
@@ -500,12 +532,12 @@
   "users": [
     {
       "id": "28a73cf1-2cc1-4491-9c28-37fdc3f954e5",
-      "username": "service-account-kafu-client",
+      "username": "service-account-spring-client",
       "emailVerified": true,
       "createdTimestamp": 1746359655999,
       "enabled": true,
       "totp": false,
-      "serviceAccountClientId": "kafu-client",
+      "serviceAccountClientId": "spring-client",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
@@ -734,27 +766,22 @@
       ]
     },
     {
-      "id": "53665d82-6579-499c-b613-3ca9b18a3411",
-      "clientId": "kafu-client",
-      "name": "kafu-client",
-      "description": "kafu-client",
-      "rootUrl": "",
-      "adminUrl": "",
-      "baseUrl": "",
+      "id": "c011d144-84ec-4c8b-a582-c5a53d42b121",
+      "clientId": "react-client",
+      "name": "react-client",
+      "description": "react-client",
+      "rootUrl": "http://localhost:5173",
+      "adminUrl": "http://localhost:5173",
+      "baseUrl": "http://localhost:5173",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "my-super-secret-client-secret",
       "redirectUris": [
-        "http://localhost:8080/*",
-        "http://localhost:8080",
         "http://localhost:5173/*",
         "http://localhost:5173"
       ],
       "webOrigins": [
-        "http://localhost:8080/*",
-        "http://localhost:8080",
         "http://localhost:5173/*",
         "http://localhost:5173"
       ],
@@ -764,16 +791,13 @@
       "standardFlowEnabled": true,
       "implicitFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": true,
-      "publicClient": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
       "frontchannelLogout": true,
       "protocol": "openid-connect",
       "attributes": {
-        "client.secret.creation.time": "1744888344",
         "client.introspection.response.allow.jwt.claim.enabled": "false",
-        "login_theme": "keycloak.v2",
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "+",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "use.refresh.tokens": "true",
@@ -782,9 +806,9 @@
         "client.use.lightweight.access.token.enabled": "false",
         "backchannel.logout.session.required": "true",
         "client_credentials.use_refresh_token": "false",
-        "tls.client.certificate.bound.access.tokens": "false",
-        "require.pushed.authorization.requests": "false",
         "acr.loa.map": "{}",
+        "require.pushed.authorization.requests": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
         "display.on.consent.screen": "false",
         "pkce.code.challenge.method": "S256",
         "token.response.type.bearer.lower-case": "false"
@@ -794,7 +818,6 @@
       "nodeReRegistrationTimeout": -1,
       "defaultClientScopes": [
         "web-origins",
-        "service_account",
         "acr",
         "profile",
         "roles",
@@ -907,6 +930,78 @@
       ],
       "defaultClientScopes": [
         "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "organization",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "53665d82-6579-499c-b613-3ca9b18a3411",
+      "clientId": "spring-client",
+      "name": "spring-client",
+      "description": "spring-client",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "my-spring-client-secret",
+      "redirectUris": [
+        "http://localhost:8080/*",
+        "http://localhost:8080"
+      ],
+      "webOrigins": [
+        "http://localhost:8080/*",
+        "http://localhost:8080"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "client.secret.creation.time": "1744888344",
+        "client.introspection.response.allow.jwt.claim.enabled": "false",
+        "login_theme": "keycloak.v2",
+        "frontchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "use.refresh.tokens": "true",
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.use.lightweight.access.token.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "client_credentials.use_refresh_token": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "require.pushed.authorization.requests": "false",
+        "acr.loa.map": "{}",
+        "display.on.consent.screen": "false",
+        "pkce.code.challenge.method": "S256",
+        "token.response.type.bearer.lower-case": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "service_account",
         "acr",
         "profile",
         "roles",
@@ -1197,8 +1292,8 @@
           "consentRequired": false,
           "config": {
             "id.token.claim": "true",
-            "introspection.token.claim": "true",
             "access.token.claim": "true",
+            "introspection.token.claim": "true",
             "userinfo.token.claim": "true"
           }
         }
@@ -1344,8 +1439,8 @@
           "protocolMapper": "oidc-allowed-origins-mapper",
           "consentRequired": false,
           "config": {
-            "introspection.token.claim": "true",
-            "access.token.claim": "true"
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
           }
         }
       ]
@@ -1688,14 +1783,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
+            "oidc-sha256-pairwise-sub-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "saml-user-property-mapper",
             "oidc-usermodel-property-mapper",
             "oidc-address-mapper",
             "saml-user-attribute-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "saml-role-list-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
             "oidc-full-name-mapper",
-            "saml-user-property-mapper"
+            "saml-role-list-mapper"
           ]
         }
       },
@@ -1719,13 +1814,13 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-address-mapper",
+            "saml-user-attribute-mapper",
+            "oidc-full-name-mapper",
             "saml-user-property-mapper",
+            "oidc-address-mapper",
+            "saml-role-list-mapper",
             "oidc-usermodel-attribute-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "saml-user-attribute-mapper",
-            "saml-role-list-mapper",
-            "oidc-full-name-mapper",
             "oidc-usermodel-property-mapper"
           ]
         }

@@ -1,5 +1,6 @@
 package com.kafu.kafu.donation;
 
+import com.kafu.kafu.payment.PaymentMethod;
 import com.kafu.kafu.problem.Problem;
 import com.kafu.kafu.user.User;
 import jakarta.persistence.*;
@@ -45,4 +46,7 @@ public class Donation {
 
     @Column(name = "donation_date", nullable = false)
     private LocalDateTime donationDate;
+
+    @Column(name = "idempotency_key")
+    private String idempotencyKey;
 }

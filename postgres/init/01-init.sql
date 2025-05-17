@@ -119,11 +119,12 @@ CREATE TABLE Donation (
     donor_id bigint NOT NULL,
     amount DECIMAL(12, 2) NOT NULL,
     currency VARCHAR(3) NOT NULL DEFAULT 'USD',
-    payment_method VARCHAR(20) NOT NULL CHECK (payment_method IN ('STRIPE','PAYPAL')),
+    payment_method VARCHAR(20) NOT NULL CHECK (payment_method IN ('STRIPE')),
     payment_transaction_id VARCHAR(255),
-    status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'SUCCEEDED', 'FAILED')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('CREATED', 'SUCCESS','FAILED')),
     is_anonymous BOOLEAN NOT NULL DEFAULT FALSE,
     donation_date TIMESTAMP NOT NULL,
+    idempotency_key VARCHAR(255),
     FOREIGN KEY (problem_id) REFERENCES Problem(id),
     FOREIGN KEY (donor_id) REFERENCES Users(id)
 );

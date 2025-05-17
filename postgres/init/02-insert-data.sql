@@ -123,9 +123,9 @@ BEGIN
         u.id,
         (50 + (random() * 4950))::numeric(12,2),
         CASE WHEN i % 3 = 0 THEN 'EUR' ELSE 'USD' END,
-        (ARRAY['STRIPE','PAYPAL'])[(i % 2) + 1],
+        'STRIPE',
         'txn_' || md5(random()::text),
-        (ARRAY['PENDING','SUCCEEDED','FAILED'])[(i % 3) + 1],
+        (ARRAY['CREATED', 'SUCCESS','FAILED'])[(i % 3) + 1],
         i % 4 = 0,
         now() - (i || ' hours')::interval
     FROM generate_series(1, 50) i

@@ -1,6 +1,7 @@
 package com.kafu.kafu.payment;
 
 import com.kafu.kafu.donation.PaymentMediator;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class WebhookController {
 
     private final PaymentMediator paymentMediator;
 
-
+    @Hidden
     @PostMapping("/stripe")
     public ResponseEntity<String> stripeWebhook(
             @RequestBody String payload,

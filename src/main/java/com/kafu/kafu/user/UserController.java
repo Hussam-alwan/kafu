@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserFileService userFileService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
@@ -42,4 +43,19 @@ public class UserController {
         User user = userService.getCurrentUser();
         return ResponseEntity.ok(UserMapper.toDTO(user));
     }
+
+    @PostMapping("/{userId}/profile-photo")
+    public ResponseEntity<String> uploadProfilePhoto(
+            @PathVariable Long userId,
+            @RequestParam String contentType) {
+        return ResponseEntity.ok(userFileService.uploadProfilePhoto(userId, contentType));
+    }
+
+    @PostMapping("/{userId}/cv")
+    public ResponseEntity<String> uploadCV(
+            @PathVariable Long userId,
+            @RequestParam String contentType) {
+        return ResponseEntity.ok(userFileService.uploadCV(userId, contentType));
+    }
+
 }

@@ -48,4 +48,11 @@ public class GovController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/logo")
+    public ResponseEntity<String> uploadProfilePhoto(
+            @PathVariable Long id,
+            @RequestParam String contentType) {
+        return ResponseEntity.ok(govService.uploadLogo(id, contentType));
+    }
+
 }

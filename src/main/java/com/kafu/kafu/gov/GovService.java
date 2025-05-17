@@ -2,6 +2,7 @@ package com.kafu.kafu.gov;
 
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.address.AddressService;
+import com.kafu.kafu.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 public class GovService {
     private final GovRepository govRepository;
     private final AddressService addressService;
+    private final S3Service s3Service;
 
     public List<Gov> findAll() {
         return govRepository.findAll();
@@ -95,5 +97,39 @@ public class GovService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete gov as it is being referenced by other entities");
         }
+    }
+
+
+    public String uploadLogo(Long govId, String contentType) {
+
+        if (!isValidPhotoContentType(contentType)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Invalid file type. Allowed types: image/jpeg,image/png,image/jpg");
+        }
+
+        Gov gov = findById(govId);
+        String key = generateProfilePhotoKey(govId);
+
+        gov.setLogoUrl(key);
+        save(gov);
+
+        return s3Service.generatePresignedUrl(contentType, key);
+
+    }
+    public void save(Gov gov)
+    {
+        govRepository.save(gov);
+    }
+
+    private String generateProfilePhotoKey(Long govId) {
+        return String.format("govs/%d/logo/%s", govId, s3Service.generateUniqueKey());
+    }
+
+    private boolean isValidPhotoContentType(String contentType) {
+        return contentType != null && (
+                contentType.equals("image/jpeg") ||
+                        contentType.equals("image/png") ||
+                        contentType.equals("image/jpg")
+        );
     }
 }

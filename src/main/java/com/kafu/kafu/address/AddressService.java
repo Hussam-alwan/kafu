@@ -1,5 +1,7 @@
 package com.kafu.kafu.address;
 
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +26,7 @@ public class AddressService {
 
     public Address findById(Long id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.ADDRESS_NOT_FOUND));
     }
 
     @Transactional
@@ -43,7 +45,7 @@ public class AddressService {
     @Transactional
     public Address update(Long id, AddressDTO addressDTO) {
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.ADDRESS_NOT_FOUND));
 
         validateCity(addressDTO);
 
@@ -61,7 +63,7 @@ public class AddressService {
     @Transactional
     public void delete(Long id) {
         addressRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.ADDRESS_NOT_FOUND));
         
         try {
             addressRepository.deleteById(id);

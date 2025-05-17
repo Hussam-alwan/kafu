@@ -1,5 +1,7 @@
 package com.kafu.kafu.problemprogress;
 
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.problemprogress.dto.ProblemProgressDTO;
 import com.kafu.kafu.solution.SolutionService;
@@ -24,17 +26,17 @@ public class ProblemProgressService {
 
     public ProblemProgress findByIdAndProblemId(Long id, Long problemId) {
         return problemProgressRepository.findByIdAndProblemId(id, problemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Progress not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.PROGRESS_NOT_FOUND));
     }
 
     public ProblemProgress findById(Long id) {
         return problemProgressRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Progress not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.PROGRESS_NOT_FOUND));
     }
 
     public void validateProblemId(ProblemProgress progress, Long problemId) {
         if (!progress.getProblem().getId().equals(problemId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Progress not found for this problem");
+            throw new BusinessException(ApplicationErrorEnum.PROGRESS_NOT_FOUND);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.kafu.kafu.solution;
 
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.solution.dto.SolutionDTO;
 import com.kafu.kafu.user.UserService;
@@ -18,7 +20,7 @@ public class SolutionService {
     private final UserService userService;
 
     public Solution findById(Long id) {
-        return solutionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
+        return solutionRepository.findById(id).orElseThrow(() -> new BusinessException(ApplicationErrorEnum.SOLUTION_NOT_FOUND));
     }
 
     public List<Solution> findSolutionsProposedByCurrentUser() {
@@ -72,7 +74,7 @@ public class SolutionService {
     @Transactional
     public void delete(Long id) {
         solutionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solution not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.SOLUTION_NOT_FOUND));
         
         try {
             solutionRepository.deleteById(id);

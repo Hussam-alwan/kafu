@@ -1,5 +1,7 @@
 package com.kafu.kafu.problemcategory;
 
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
 import com.kafu.kafu.problemcategory.dto.ProblemCategorySearchCriteria;
@@ -19,7 +21,7 @@ public class ProblemCategoryService {
 
     public ProblemCategory findById(Long id) {
         return problemCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem category not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.CATEGORY_NOT_FOUND));
     }
 
     @Transactional
@@ -44,7 +46,7 @@ public class ProblemCategoryService {
     @Transactional
     public ProblemCategory update(Long id, ProblemCategoryDTO problemCategoryDTO) {
         ProblemCategory problemCategory = problemCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem category not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.CATEGORY_NOT_FOUND));
 
         if (!problemCategory.getName().equals(problemCategoryDTO.getName()) && 
             problemCategoryRepository.existsByNameAndGovId(problemCategoryDTO.getName(), problemCategoryDTO.getGovId())) {
@@ -63,7 +65,7 @@ public class ProblemCategoryService {
     @Transactional
     public void delete(Long id) {
         problemCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem category not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.CATEGORY_NOT_FOUND));
         
         try {
             problemCategoryRepository.deleteById(id);

@@ -1,5 +1,7 @@
 package com.kafu.kafu.donation;
 
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.payment.PaymentMethod;
 import com.kafu.kafu.payment.PaymentService;
 import com.kafu.kafu.payment.WebhookEvent;
@@ -40,7 +42,7 @@ public class DonationService {
 
     public Donation findById(Long id) {
         return donationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Donation not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.DONATION_NOT_FOUND));
     }
 
     public void donate(DonationDTO donationDTO) {
@@ -53,7 +55,7 @@ public class DonationService {
         // Check for duplicate order
         Optional<Donation> existingOrder = donationRepository.findByIdempotencyKey(donationDTO.getIdempotencyKey());
         if (existingOrder.isPresent()) {
-            throw new RuntimeException("Idempotency Key has been sent before");
+            throw new RuntimeException("Idempotency Key has been processed before");
         }
 
         // Save order to DB
@@ -75,7 +77,7 @@ public class DonationService {
 
     public void updateStatus(WebhookEvent event) {
         Donation donation = donationRepository.findByPaymentTransactionId(event.getGatewayOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found: " + event.getGatewayOrderId()));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.DONATION_NOT_FOUND));
         donation.setStatus(event.getSuccess());
         donationRepository.save(donation);
     }

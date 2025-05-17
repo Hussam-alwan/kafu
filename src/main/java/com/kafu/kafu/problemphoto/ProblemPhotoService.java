@@ -1,5 +1,7 @@
 package com.kafu.kafu.problemphoto;
 
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.Problem;
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.problemprogress.ProblemProgress;
@@ -24,7 +26,7 @@ public class ProblemPhotoService {
 
     public ProblemPhoto findById(Long id) {
         return problemPhotoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.PHOTO_NOT_FOUND));
     }
 
     public ProblemPhoto findByIdWithS3Url(Long id) {
@@ -80,7 +82,7 @@ public class ProblemPhotoService {
     @Transactional
     public void deleteById(Long id) {
         ProblemPhoto photo = problemPhotoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.PHOTO_NOT_FOUND));
         
         s3Service.deleteObject(photo.getS3Key());
 

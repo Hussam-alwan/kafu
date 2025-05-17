@@ -2,6 +2,8 @@ package com.kafu.kafu.gov;
 
 import com.kafu.kafu.address.Address;
 import com.kafu.kafu.address.AddressService;
+import com.kafu.kafu.exception.ApplicationErrorEnum;
+import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,7 @@ public class GovService {
 
     public Gov findById(Long id) {
         return govRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gov not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.GOV_NOT_FOUND));
     }
 
     @Transactional
@@ -59,7 +61,7 @@ public class GovService {
     @Transactional
     public Gov update(Long id, GovDTO govDTO) {
         Gov gov = govRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gov not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.GOV_NOT_FOUND));
 
         if (govDTO.getEmail() != null && !govDTO.getEmail().equals(gov.getEmail()) && 
             govRepository.existsByEmail(govDTO.getEmail())) {
@@ -90,7 +92,7 @@ public class GovService {
     @Transactional
     public void delete(Long id) {
         govRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Gov not found"));
+                .orElseThrow((() -> new BusinessException(ApplicationErrorEnum.GOV_NOT_FOUND)));
         
         try {
             govRepository.deleteById(id);

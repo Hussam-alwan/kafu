@@ -36,7 +36,7 @@ public class ProblemService {
 
     public Problem findById(Long id) {
         return problemRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.PROBLEM_NOT_FOUND));
     }
 
     @Transactional
@@ -110,7 +110,7 @@ public class ProblemService {
     @Transactional
     public void delete(Long id) {
         problemRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found"));
+                .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.PROBLEM_NOT_FOUND));
         
         try {
             problemRepository.deleteById(id);
@@ -119,67 +119,6 @@ public class ProblemService {
         }
     }
 
-//    @Transactional
-//    public Problem approve(Long id) {
-//        Problem problem = findById(id);
-//
-//        if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending problems can be approved");
-//        }
-//
-//        problem.setApprovedByUser(userService.getCurrentUser());
-//        problem.setStatus(ProblemStatus.APPROVED);
-//
-//        problem = problemRepository.save(problem);
-//        return problem;
-//    }
-//
-//    @Transactional
-//    public Problem reject(Long id, ProblemRejectionDTO rejectionDTO) {
-//        Problem problem = findById(id);
-//
-//        if(rejectionDTO.getIsReal())
-//        {
-//            throw new RuntimeException("is real field must be set to false");
-//        }
-//
-//        if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending problems can be rejected");
-//        }
-//
-//        problem.setIsReal(false);
-//        problem.setRejectionReason(rejectionDTO.getRejectionReason());
-//        problem.setStatus(ProblemStatus.REJECTED);
-//
-//        problem.setApprovedByUser(userService.getCurrentUser());
-//        problem = problemRepository.save(problem);
-//        return problem;
-//    }
-//
-//    @Transactional
-//    public Problem updateRealFields(Long id, RealFieldsDTO dto) {
-//        //set approved here
-//        Problem problem = findById(id);
-//        if (dto.getIsReal() != null) problem.setIsReal(dto.getIsReal());
-//        if (dto.getForContribution() != null) problem.setForContribution(dto.getForContribution());
-//        if (dto.getForDonation() != null) problem.setForDonation(dto.getForDonation());
-//
-//        problem.setApprovedByUser(userService.getCurrentUser());
-//
-//        problem = problemRepository.save(problem);
-//        return problem;
-//    }
-//
-//    @Transactional
-//    public Problem updateDetails(Long id, ProblemDetailsDTO dto) {
-//        Problem problem = findById(id);
-//        if (dto.getTitle() != null) problem.setTitle(dto.getTitle());
-//        if (dto.getDescription() != null) problem.setDescription(dto.getDescription());
-//        if (dto.getAddressId() != null) problem.setAddress(addressService.findById(dto.getAddressId()));
-//        if (dto.getCategoryId() != null && problem.getStatus() == ProblemStatus.PENDING_APPROVAL) problem.setCategory(problemCategoryService.findById(dto.getCategoryId()));
-//        problem = problemRepository.save(problem);
-//        return problem;
-//    }
 
     @Transactional
     public Problem patch(Long id, ProblemDTO problemDTO) {

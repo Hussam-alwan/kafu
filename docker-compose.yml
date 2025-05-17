@@ -72,6 +72,9 @@ services:
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
       AWS_REGION: ${AWS_REGION}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      PAYMENT_STRIPE_APIKEY: ${PAYMENT_STRIPE_APIKEY}
+      PAYMENT_STRIPE_webhookSecret: ${PAYMENT_STRIPE_webhookSecret}
+
 
   localhost:
     container_name: localhost

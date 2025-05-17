@@ -17,6 +17,7 @@ public class DonationMapper {
         dto.setStatus(entity.getStatus());
         dto.setIsAnonymous(entity.getIsAnonymous());
         dto.setDonationDate(entity.getDonationDate());
+        dto.setIdempotencyKey(entity.getIdempotencyKey());
         return dto;
     }
 
@@ -53,6 +54,9 @@ public class DonationMapper {
         }
         if (dto.getDonationDate() != null) {
             entity.setDonationDate(dto.getDonationDate());
+        }
+        if (dto.getIdempotencyKey() != null) {
+            entity.setIdempotencyKey(dto.getIdempotencyKey());
         }
         // Relations (problem, donor) handled in service
     }

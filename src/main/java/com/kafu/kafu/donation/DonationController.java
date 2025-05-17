@@ -12,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DonationController {
     private final DonationService donationService;
+    private final PaymentMediator paymentMediator;
 
     @GetMapping
     public ResponseEntity<Page<DonationDTO>> findByProblemId(@PathVariable Long problemId,Pageable pageable) {
@@ -28,6 +29,8 @@ public class DonationController {
         return ResponseEntity.ok(DonationMapper.toDTO(donationService.findById(id)));
     }
 
-//    make this /donate 500usd
-
+    @PostMapping
+    public ResponseEntity<PaymentSessionResponse> donate(@PathVariable Long problemId, PaymentSessionRequest donationRequest) {
+        return ResponseEntity.ok(paymentMediator.initiateDonation(problemId , donationRequest));
+    }
 }

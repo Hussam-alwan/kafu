@@ -5,6 +5,7 @@ import com.kafu.kafu.address.AddressService;
 import com.kafu.kafu.exception.ApplicationErrorEnum;
 import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.dto.ProblemDTO;
+import com.kafu.kafu.problem.dto.ProblemDetailsDTO;
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
 import com.kafu.kafu.problem.dto.UserProblemSearchCriteria;
 import com.kafu.kafu.problemcategory.ProblemCategory;
@@ -40,25 +41,21 @@ public class ProblemService {
     }
 
     @Transactional
-    public Problem create(ProblemDTO problemDTO) {
-        //set submitted uuser id here
+    public Problem create(ProblemDetailsDTO problemDetailsDTO) {
 
-        if (problemDTO.getId() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new problem cannot already have an ID");
-        }
 
         // Verify that the submitting user exists
         var user =  userService.getCurrentUser();
 
         // Get the address if provided
         Address address = null;
-        if (problemDTO.getAddressId() != null) {
-            address = addressService.findById(problemDTO.getAddressId());
+        if (problemDetailsDTO.getAddressId() != null) {
+            address = addressService.findById(problemDetailsDTO.getAddressId());
         }
 
         Problem problem = new Problem();
-        problem.setTitle(problemDTO.getTitle());
-        problem.setDescription(problemDTO.getDescription());
+        problem.setTitle(problemDetailsDTO.getTitle());
+        problem.setDescription(problemDetailsDTO.getDescription());
         problem.setSubmittedByUser(user);
         problem.setAddress(address);
         
@@ -70,7 +67,7 @@ public class ProblemService {
         problem.setStatus(ProblemStatus.PENDING_APPROVAL);
         problem.setRejectionReason("");
 
-        ProblemCategory problemCategory = problemCategoryService.findById(problemDTO.getCategoryId());
+        ProblemCategory problemCategory = problemCategoryService.findById(problemDetailsDTO.getCategoryId());
         problem.setCategory(problemCategory);
 
         problem = problemRepository.save(problem);

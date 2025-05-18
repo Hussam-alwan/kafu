@@ -1,6 +1,7 @@
 package com.kafu.kafu.problem;
 
 import com.kafu.kafu.problem.dto.ProblemDTO;
+import com.kafu.kafu.problem.dto.ProblemDetailsDTO;
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
 import com.kafu.kafu.problem.dto.UserProblemSearchCriteria;
 import jakarta.validation.Valid;
@@ -30,8 +31,8 @@ public class ProblemController {
     }
 
     @PostMapping
-    public ResponseEntity<ProblemDTO> create(@Valid @RequestBody ProblemDTO problemDTO) {
-        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.create(problemDTO)));
+    public ResponseEntity<ProblemDTO> create(@Valid @RequestBody ProblemDetailsDTO problemDetailsDTO) {
+        return ResponseEntity.ok(ProblemMapper.toDTO(problemService.create(problemDetailsDTO)));
     }
 
     @PatchMapping("/{id}")

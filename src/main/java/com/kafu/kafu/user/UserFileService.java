@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +45,11 @@ public class UserFileService {
     }
 
     private String generateProfilePhotoKey(Long userId) {
-        return String.format("users/%d/profile-photo/%s", userId, s3Service.generateUniqueKey());
+        return String.format("users/%d/profile-photo/%s", userId, UUID.randomUUID().toString());
     }
 
     private String generateCVKey(Long userId) {
-        return String.format("users/%d/cv/%s", userId, s3Service.generateUniqueKey());
+        return String.format("users/%d/cv/%s", userId, UUID.randomUUID().toString());
     }
 
     private boolean isValidCVContentType(String contentType) {

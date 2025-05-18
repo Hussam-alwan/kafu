@@ -13,9 +13,12 @@ public class UserController {
     private final UserService userService;
     private final UserFileService userFileService;
 
+
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(UserMapper.toDTO(userService.findById(id)));
+        User user = userService.findById(id);
+        user = userService.replaceUrlsWithPresigned(user);
+        return ResponseEntity.ok(UserMapper.toDTO(user));
     }
 
     @PutMapping("/{id}")
@@ -23,6 +26,7 @@ public class UserController {
             @PathVariable Long id,
             @Valid @RequestBody UserDTO userDTO) {
         User user = userService.update(id, userDTO);
+        user = userService.replaceUrlsWithPresigned(user);
         return ResponseEntity.ok(UserMapper.toDTO(user));
     }
 
@@ -41,6 +45,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         User user = userService.getCurrentUser();
+        user = userService.replaceUrlsWithPresigned(user);
         return ResponseEntity.ok(UserMapper.toDTO(user));
     }
 

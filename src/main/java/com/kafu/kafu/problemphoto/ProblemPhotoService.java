@@ -8,13 +8,12 @@ import com.kafu.kafu.problemprogress.ProblemProgress;
 import com.kafu.kafu.problemprogress.ProblemProgressService;
 import com.kafu.kafu.s3.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +55,7 @@ public class ProblemPhotoService {
         List<ProblemPhotoDTO> photos = new ArrayList<>();
         
         for (int i = 0; i < count; i++) {
-            String key = s3Service.generateUniqueKey();
+            String key = generatePhotoKey(problemId);
             String presignedUrl = s3Service.generatePresignedUrl(contentType,key);
         
             ProblemPhoto photo = new ProblemPhoto();
@@ -77,6 +76,9 @@ public class ProblemPhotoService {
         }
     
         return photos;
+    }
+    private String generatePhotoKey(Long problemId) {
+        return String.format("problems/%d/photo/%s", problemId, UUID.randomUUID().toString());
     }
 
     @Transactional

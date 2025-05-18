@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -124,7 +125,7 @@ public class GovService {
     }
 
     private String generateProfilePhotoKey(Long govId) {
-        return String.format("govs/%d/logo/%s", govId, s3Service.generateUniqueKey());
+        return String.format("govs/%d/logo/%s", govId, UUID.randomUUID().toString());
     }
 
     private boolean isValidPhotoContentType(String contentType) {
@@ -133,5 +134,12 @@ public class GovService {
                         contentType.equals("image/png") ||
                         contentType.equals("image/jpg")
         );
+    }
+
+    public Gov replaceUrlsWithPresigned(Gov gov)
+    {
+        if (gov.getLogoUrl() != null)
+            gov.setLogoUrl(s3Service.generatePresignedGetUrl(gov.getLogoUrl()));
+        return gov;
     }
 }

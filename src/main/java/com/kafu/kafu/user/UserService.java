@@ -5,6 +5,7 @@ import com.kafu.kafu.exception.ApplicationErrorEnum;
 import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
+import com.kafu.kafu.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ public class UserService {
     private final AddressService addressService;
     private final GovService govService;
     private final Keycloak keycloak;
+    private final S3Service s3Service;
 
     @Value("${keycloak.realm}")
     private String realm;
@@ -159,5 +161,14 @@ public class UserService {
     public void save(User user)
     {
         userRepository.save(user);
+    }
+
+    public User replaceUrlsWithPresigned(User user)
+    {
+        if(user.getCvUrl() != null)
+            user.setCvUrl(s3Service.generatePresignedGetUrl(user.getCvUrl()));
+        if(user.getPhotoUrl() != null)
+            user.setPhotoUrl(s3Service.generatePresignedGetUrl(user.getPhotoUrl()));
+        return user;
     }
 }

@@ -16,7 +16,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -76,10 +75,6 @@ public class S3Service {
                 "Invalid file type. Allowed types: " + allowedFileTypes
             );
         }
-    }
-
-    public String generateUniqueKey() {
-        return "problems/" + UUID.randomUUID().toString();
     }
 
     public void deleteObject(String key) {

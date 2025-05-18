@@ -2,6 +2,7 @@ package com.kafu.kafu.problem;
 
 import com.kafu.kafu.problem.dto.ProblemDTO;
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
+import com.kafu.kafu.problem.dto.UserProblemSearchCriteria;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/problems")
@@ -46,7 +46,10 @@ public class ProblemController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<ProblemDTO>> findByUserId() {
-        return ResponseEntity.ok(problemService.findProblemsForCurrentUser().stream().map(ProblemMapper::toDTO).toList());
+    public ResponseEntity<Page<ProblemDTO>> findByUserId(
+            @ModelAttribute UserProblemSearchCriteria criteria,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(problemService.searchUserProblems(criteria, pageable)
+                .map(ProblemMapper::toDTO));
     }
 }

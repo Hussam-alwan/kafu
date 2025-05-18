@@ -1,6 +1,7 @@
 package com.kafu.kafu.problem;
 
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
+import com.kafu.kafu.problem.dto.UserProblemSearchCriteria;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -60,5 +61,21 @@ public class ProblemSpecification {
 
             return predicate;
         };
+    }
+
+    public static Specification<Problem> withUserId(Long userId) {
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if (userId != null) {
+                Join<Object, Object> userJoin = root.join("submittedByUser");
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(userJoin.get("id"), userId));
+            }
+            return predicate;
+        };
+    }
+
+    public static Specification<Problem> fromUserCriteria(UserProblemSearchCriteria criteria) {
+        return Specification.where(withSearchCriteria(criteria))
+                .and(withUserId(criteria.getUserId()));
     }
 }

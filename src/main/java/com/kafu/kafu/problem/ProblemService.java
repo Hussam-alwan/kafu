@@ -6,6 +6,7 @@ import com.kafu.kafu.exception.ApplicationErrorEnum;
 import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.dto.ProblemDTO;
 import com.kafu.kafu.problem.dto.ProblemSearchCriteria;
+import com.kafu.kafu.problem.dto.UserProblemSearchCriteria;
 import com.kafu.kafu.problemcategory.ProblemCategory;
 import com.kafu.kafu.problemcategory.ProblemCategoryService;
 import com.kafu.kafu.user.User;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -228,8 +228,14 @@ public class ProblemService {
         }
     }
 
-    public List<Problem> findProblemsForCurrentUser() {
+    public Page<Problem> searchUserProblems(UserProblemSearchCriteria criteria, Pageable pageable) {
+
         Long userId = userService.getCurrentUser().getId();
-        return problemRepository.findBySubmittedByUser_Id(userId);
+
+        criteria.setUserId(userId);
+
+        Specification<Problem> spec = ProblemSpecification.fromUserCriteria(criteria);
+        return problemRepository.findAll(spec, pageable);
+
     }
 }

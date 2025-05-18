@@ -73,8 +73,8 @@ BEGIN
         i % 4 = 0,
         now() - (i || ' hours')::interval,
         u.id,
-        CASE WHEN i % 4 = 0 THEN NULL ELSE (SELECT id FROM Users ORDER BY random() LIMIT 1) END,
-        CASE WHEN i % 10 = 0 THEN 'Duplicate entry' ELSE NULL END,
+        CASE WHEN i % 5 = 1 THEN (SELECT id FROM Users ORDER BY random() LIMIT 1) ELSE NULL END, -- APPROVED is at index 2 (i%5=1)
+        CASE WHEN i % 5 = 2 THEN 'Duplicate entry' ELSE NULL END, -- REJECTED is at index 3 (i%5=2)
         a.id,
         pc.id,
         (ARRAY['PENDING_APPROVAL','APPROVED','REJECTED','IN_PROGRESS','RESOLVED'])[(i % 5) + 1]

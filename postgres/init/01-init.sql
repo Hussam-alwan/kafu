@@ -57,7 +57,7 @@ CREATE TABLE Users (
 -- 4. ProblemCategory Table
 CREATE TABLE Problem_Category (
     id bigint PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(50) NOT NULL,
     gov_id bigint NOT NULL,
     FOREIGN KEY (gov_id) REFERENCES Gov(id)
 );

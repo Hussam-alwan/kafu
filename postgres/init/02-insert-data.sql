@@ -216,7 +216,7 @@ BEGIN
     -- Populate Problem_Category (50 records)
     INSERT INTO Problem_Category (id, name, gov_id) VALUES
     -- وزارة الطاقة (id=1)
-    (nextval('problem_category_seq'), 'كهرباء', 1),
+    (nextval('problem_category_seq'), 'غير ذلك', 1),
     (nextval('problem_category_seq'), 'وقود', 1),
     (nextval('problem_category_seq'), 'طاقة متجددة', 1),
 
@@ -302,6 +302,55 @@ BEGIN
     -- وزارة الطوارئ والكوارث (id=1001)
     (nextval('problem_category_seq'), 'كوارث طبيعية', 1001),
     (nextval('problem_category_seq'), 'إغاثة', 1001);
+
+
+    INSERT INTO Problem_Category (id, name, gov_id) VALUES
+    (nextval('problem_category_seq'), 'غير ذلك', 1),
+    (nextval('problem_category_seq'), 'غير ذلك', 51),
+    (nextval('problem_category_seq'), 'غير ذلك', 101),
+    (nextval('problem_category_seq'), 'غير ذلك', 151),
+    (nextval('problem_category_seq'), 'غير ذلك', 201),
+    (nextval('problem_category_seq'), 'غير ذلك', 251),
+    (nextval('problem_category_seq'), 'غير ذلك', 301),
+    (nextval('problem_category_seq'), 'غير ذلك', 351),
+    (nextval('problem_category_seq'), 'غير ذلك', 401),
+    (nextval('problem_category_seq'), 'غير ذلك', 451),
+    (nextval('problem_category_seq'), 'غير ذلك', 501),
+    (nextval('problem_category_seq'), 'غير ذلك', 551),
+    (nextval('problem_category_seq'), 'غير ذلك', 601),
+    (nextval('problem_category_seq'), 'غير ذلك', 651),
+    (nextval('problem_category_seq'), 'غير ذلك', 701),
+    (nextval('problem_category_seq'), 'غير ذلك', 751),
+    (nextval('problem_category_seq'), 'غير ذلك', 801),
+    (nextval('problem_category_seq'), 'غير ذلك', 851),
+    (nextval('problem_category_seq'), 'غير ذلك', 901),
+    (nextval('problem_category_seq'), 'غير ذلك', 951),
+    (nextval('problem_category_seq'), 'غير ذلك', 1001),
+    (nextval('problem_category_seq'), 'غير ذلك', 1051),
+    (nextval('problem_category_seq'), 'غير ذلك', 1101),
+    (nextval('problem_category_seq'), 'غير ذلك', 1151),
+    (nextval('problem_category_seq'), 'غير ذلك', 1201),
+    (nextval('problem_category_seq'), 'غير ذلك', 1251),
+    (nextval('problem_category_seq'), 'غير ذلك', 1301),
+    (nextval('problem_category_seq'), 'غير ذلك', 1351),
+    (nextval('problem_category_seq'), 'غير ذلك', 1401),
+    (nextval('problem_category_seq'), 'غير ذلك', 1451),
+    (nextval('problem_category_seq'), 'غير ذلك', 1501),
+    (nextval('problem_category_seq'), 'غير ذلك', 1551),
+    (nextval('problem_category_seq'), 'غير ذلك', 1601),
+    (nextval('problem_category_seq'), 'غير ذلك', 1651),
+    (nextval('problem_category_seq'), 'غير ذلك', 1701),
+    (nextval('problem_category_seq'), 'غير ذلك', 1751),
+    (nextval('problem_category_seq'), 'غير ذلك', 1801),
+    (nextval('problem_category_seq'), 'غير ذلك', 1851),
+    (nextval('problem_category_seq'), 'غير ذلك', 1901),
+    (nextval('problem_category_seq'), 'غير ذلك', 1951),
+    (nextval('problem_category_seq'), 'غير ذلك', 2001),
+    (nextval('problem_category_seq'), 'غير ذلك', 2051),
+    (nextval('problem_category_seq'), 'غير ذلك', 2101),
+    (nextval('problem_category_seq'), 'غير ذلك', 2151),
+    (nextval('problem_category_seq'), 'غير ذلك', 2201),
+    (nextval('problem_category_seq'), 'غير ذلك', 2251);
 
     -- Populate Problem (50 records)
     INSERT INTO Problem (id, title, description, is_real, for_contribution, for_donation,

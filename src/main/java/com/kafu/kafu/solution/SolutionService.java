@@ -66,7 +66,7 @@ public class SolutionService {
         if (solutionDTO.getAcceptedByUserId() != null) {
             solution.setAcceptedByUserId(userService.findById(solutionDTO.getAcceptedByUserId()));
         }
-        SolutionMapper.toEntity(solutionDTO);
+        solution = SolutionMapper.toEntity(solutionDTO);
         solution = solutionRepository.save(solution);
         return solution;
     }

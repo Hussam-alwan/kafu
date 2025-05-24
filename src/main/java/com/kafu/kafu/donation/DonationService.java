@@ -32,7 +32,7 @@ public class DonationService {
     }
 
     public Page<Donation> findByProblemId(Long problemId, Pageable pageable) {
-        return donationRepository.findByProblem_Id(problemId,pageable);
+        return donationRepository.findByProblem_IdAndIsAnonymous(problemId,false,pageable);
     }
 
     public List<Donation> findProblemDonationsForCurrentUser(Long problemId) {

@@ -1,10 +1,14 @@
 package com.kafu.kafu.user;
 
+import com.kafu.kafu.donation.DonationDTO;
+import com.kafu.kafu.donation.DonationMapper;
+import com.kafu.kafu.donation.DonationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final UserFileService userFileService;
+    private final DonationService donationService;
 
 
     @GetMapping("/{id}")
@@ -63,4 +68,8 @@ public class UserController {
         return ResponseEntity.ok(userFileService.uploadCV(userId, contentType));
     }
 
+    @GetMapping("/me/donations")
+    public ResponseEntity<List<DonationDTO>> getMyDonations() {
+        return ResponseEntity.ok(donationService.findAllDonationsForCurrentUser().stream().map(DonationMapper::toDTO).toList());
+    }
 }

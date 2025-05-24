@@ -10,8 +10,8 @@ import java.util.Optional;
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<Donation> findByDonor_IdAndProblem_Id(Long donorId, Long problemId);
+    List<Donation> findByDonor_Id(Long donorId);
     Optional<Donation> findByPaymentTransactionId(String paymentTransactionId);
     Optional<Donation> findByIdempotencyKey(String idempotencyKey);
-
     Page<Donation> findByProblem_IdAndIsAnonymous(Long id, Boolean isAnonymous, Pageable pageable);
 }

@@ -10,9 +10,7 @@ import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +36,11 @@ public class DonationService {
     public List<Donation> findProblemDonationsForCurrentUser(Long problemId) {
         Long donorId = userService.getCurrentUser().getId();
         return donationRepository.findByDonor_IdAndProblem_Id(donorId,problemId);
+    }
+
+    public List<Donation> findAllDonationsForCurrentUser() {
+        Long donorId = userService.getCurrentUser().getId();
+        return donationRepository.findByDonor_Id(donorId);
     }
 
     public Donation findById(Long id) {

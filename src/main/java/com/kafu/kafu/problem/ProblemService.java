@@ -204,6 +204,10 @@ public class ProblemService {
         if (problemDTO.getForDonation() != null) {
             problem.setForDonation(problemDTO.getForDonation());
         }
+        if (problemDTO.getRejectionReason() != null) {
+            problem.setRejectionReason(problemDTO.getRejectionReason());
+        }
+
     }
 
     private void handleDetailsUpdate(Problem problem, ProblemDTO problemDTO) {

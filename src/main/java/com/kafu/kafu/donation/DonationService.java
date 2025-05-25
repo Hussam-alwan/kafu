@@ -30,7 +30,7 @@ public class DonationService {
     }
 
     public Page<Donation> findByProblemId(Long problemId, Pageable pageable) {
-        return donationRepository.findByProblem_IdAndIsAnonymous(problemId,false,pageable);
+        return donationRepository.findByProblem_Id(problemId,pageable);
     }
 
     public List<Donation> findProblemDonationsForCurrentUser(Long problemId) {
@@ -83,5 +83,9 @@ public class DonationService {
                 .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.DONATION_NOT_FOUND));
         donation.setStatus(event.getSuccess());
         donationRepository.save(donation);
+    }
+
+    public Page<PublicDonationDTO> findPublicDonationsWithStatusSuccess(Long problemId, Pageable pageable) {
+        return donationRepository.findPublicDonationsWithDonorAndStatusSuccess(problemId, pageable);
     }
 }

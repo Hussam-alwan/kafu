@@ -30,7 +30,14 @@ public class DonationController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentSessionResponse> donate(@PathVariable Long problemId, PaymentSessionRequest donationRequest) {
+    public ResponseEntity<PaymentSessionResponse> donate(@PathVariable Long problemId,@RequestBody PaymentSessionRequest donationRequest) {
         return ResponseEntity.ok(paymentMediator.initiateDonation(problemId , donationRequest));
+    }
+
+    @GetMapping("/public")
+    public ResponseEntity<Page<PublicDonationDTO>> findPublicDonationsWithStatusSuccess(
+            @PathVariable Long problemId,
+            Pageable pageable) {
+        return ResponseEntity.ok(donationService.findPublicDonationsWithStatusSuccess(problemId, pageable));
     }
 }

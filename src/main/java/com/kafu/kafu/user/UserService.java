@@ -8,6 +8,10 @@ import com.kafu.kafu.gov.GovService;
 import com.kafu.kafu.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -16,6 +20,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -170,5 +175,45 @@ public class UserService {
         if(user.getPhotoUrl() != null)
             user.setPhotoUrl(s3Service.generatePresignedGetUrl(user.getPhotoUrl()));
         return user;
+    }
+
+    /**
+     * Add a role to a user in Keycloak for both spring-client and react-client.
+     * If the user already has the role, do nothing.
+     * @param userId the database user ID
+     * @param newRole the new role to assign (e.g., "gov" or "admin")
+     */
+    public void addUserRoleIfNotExistsByUserId(Long userId, String newRole) {
+        User user = findById(userId);
+        String keycloakUserId = user.getKeycloakId();
+
+        RealmResource realmResource = keycloak.realm(realm);
+        UsersResource usersResource = realmResource.users();
+        UserResource userResource = usersResource.get(keycloakUserId);
+
+        for (String clientId : List.of("spring-client", "react-client")) {
+            var clients = realmResource.clients().findByClientId(clientId);
+            if (clients.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Keycloak client '" + clientId + "' does not exist in realm: " + realm);
+            }
+            String clientUuid = clients.get(0).getId();
+
+            // Get current client roles
+            List<RoleRepresentation> currentRoles = userResource.roles().clientLevel(clientUuid).listAll();
+            boolean hasRole = currentRoles.stream().anyMatch(r -> r.getName().equals(newRole));
+            if (!hasRole) {
+                // Assign the new role
+                try {
+                    RoleRepresentation role = realmResource.clients().get(clientUuid)
+                            .roles().get(newRole).toRepresentation();
+                    userResource.roles().clientLevel(clientUuid).add(List.of(role));
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role '" + newRole + "' does not exist in Keycloak client: " + clientId);
+                }
+            }
+        }
+
+
     }
 }

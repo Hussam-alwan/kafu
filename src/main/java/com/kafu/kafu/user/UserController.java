@@ -72,4 +72,12 @@ public class UserController {
     public ResponseEntity<List<DonationDTO>> getMyDonations() {
         return ResponseEntity.ok(donationService.findAllDonationsForCurrentUser().stream().map(DonationMapper::toDTO).toList());
     }
+
+    @PutMapping("/{userId}/add-role")
+    public ResponseEntity<Void> addUserRoleIfNotExists(
+            @PathVariable Long userId,
+            @RequestParam String newRole) {
+        userService.addUserRoleIfNotExistsByUserId(userId, newRole);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -36,7 +36,7 @@ public class ProblemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProblemDTO> patch(@PathVariable Long id, @Valid @RequestBody ProblemDTO problemDTO) {
+    public ResponseEntity<ProblemDTO> patch(@PathVariable Long id, @RequestBody ProblemDTO problemDTO) {
         return ResponseEntity.ok(ProblemMapper.toDTO(problemService.patch(id, problemDTO)));
     }
 

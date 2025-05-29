@@ -39,6 +39,7 @@ public class StripeService implements PaymentService {
 
         // Create Stripe Checkout Session
         SessionCreateParams params = SessionCreateParams.builder()
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(request.getSuccessUrl())
                 .setCancelUrl(request.getCancelUrl())
@@ -48,7 +49,7 @@ public class StripeService implements PaymentService {
                                 .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
                                 .setCurrency(request.getCurrency())
                                 .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                        .setName("Product Name").build())
+                                        .setName("Problem donation").build())
                                 .setUnitAmount(request.getAmount().multiply(BigDecimal.valueOf(100)).longValue())
                                 .build())
 

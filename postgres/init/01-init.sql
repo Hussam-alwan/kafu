@@ -100,6 +100,7 @@ CREATE TABLE Solution (
     estimated_cost DECIMAL(12, 2) NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING_APPROVAL', 'ACCEPTED', 'REJECTED','WORKINPROGRESS')),
     accepted_reason TEXT,
+    creation_date DATE,
     start_date DATE,
     end_date DATE,
     feedback TEXT,

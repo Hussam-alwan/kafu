@@ -4,12 +4,14 @@ import com.kafu.kafu.exception.ApplicationErrorEnum;
 import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.problem.ProblemService;
 import com.kafu.kafu.solution.dto.SolutionDTO;
+import com.kafu.kafu.solution.dto.SolutionWithSubmitterDTO;
 import com.kafu.kafu.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,11 +34,16 @@ public class SolutionService {
         return solutionRepository.findByProblem_Id(problemId);
     }
 
+    public List<SolutionWithSubmitterDTO> findSolutionWithSubmitterByProblemId(Long problemId) {
+        return solutionRepository.findSolutionWithSubmitterByProblemId(problemId);
+    }
+
     @Transactional
     public Solution create(SolutionDTO solutionDTO) {
         Solution solution = new Solution();
         solution.setDescription(solutionDTO.getDescription());
         solution.setEstimatedCost(solutionDTO.getEstimatedCost());
+        solution.setCreationDate(LocalDate.now());
         // Handle relations
         if (solutionDTO.getProblemId() != null) {
             solution.setProblem(problemService.findById(solutionDTO.getProblemId()));

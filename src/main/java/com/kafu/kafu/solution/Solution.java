@@ -51,4 +51,6 @@ public class Solution {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accepted_by_user_id")
     private User acceptedByUserId;
+
+    private LocalDate creationDate;
 }

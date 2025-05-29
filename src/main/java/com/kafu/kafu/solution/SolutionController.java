@@ -1,6 +1,7 @@
 package com.kafu.kafu.solution;
 
 import com.kafu.kafu.solution.dto.SolutionDTO;
+import com.kafu.kafu.solution.dto.SolutionWithSubmitterDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +31,9 @@ public class SolutionController {
     }
     @Operation(summary = "findByProblemId",description = "find solutions by problem id")
     @GetMapping
-    public ResponseEntity<List<SolutionDTO>> findByProblemId(@PathVariable Long problemId) {
-        List<SolutionDTO> solutions = solutionService.findByProblemId(problemId)
-                .stream()
-                .map(SolutionMapper::toDTO)
-                .toList();
-        return ResponseEntity.ok(solutions);
+    public ResponseEntity<List<SolutionWithSubmitterDTO>> findByProblemIdWithSubmitter(@PathVariable Long problemId) {
+        return ResponseEntity.ok(solutionService.findSolutionWithSubmitterByProblemId(problemId));
     }
-
     @PostMapping
     public ResponseEntity<SolutionDTO> create(@PathVariable Long problemId,@Valid @RequestBody SolutionDTO solutionDTO) {
         solutionDTO.setProblemId(problemId);

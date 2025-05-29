@@ -22,6 +22,7 @@ public class SolutionMapper {
         dto.setProblemId(entity.getProblem() != null ? entity.getProblem().getId() : null);
         dto.setProposedByUserId(entity.getProposedByUserId() != null ? entity.getProposedByUserId().getId() : null);
         dto.setAcceptedByUserId(entity.getAcceptedByUserId() != null ? entity.getAcceptedByUserId().getId() : null);
+        dto.setCreationDate(entity.getCreationDate());
         return dto;
     }
 

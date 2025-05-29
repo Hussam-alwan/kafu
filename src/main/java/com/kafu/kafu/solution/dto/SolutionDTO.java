@@ -33,4 +33,6 @@ public class SolutionDTO {
     private Long proposedByUserId;
 
     private Long acceptedByUserId;
+
+    private LocalDate creationDate;
 }

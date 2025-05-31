@@ -122,9 +122,6 @@ public class ProblemService {
         Problem problem = findById(id);
         User currentUser = userService.getCurrentUser();
 
-        // Check if the user has permission to update this problem
-        validateUserPermission(problem, currentUser);
-
         // Handle status-based updates
         if (problemDTO.getStatus() != null) {
             handleStatusUpdate(problem, problemDTO, currentUser);
@@ -137,66 +134,62 @@ public class ProblemService {
             handleRealFieldsUpdate(problem, problemDTO);
         }
 
-        // Handle basic details update
-        handleDetailsUpdate(problem, problemDTO);
+        if (problemDTO.getTitle() != null ||
+                problemDTO.getDescription() != null||
+                problemDTO.getAddressId() != null||
+                problemDTO.getCategoryId() != null
+        ) handleDetailsUpdate(problem, problemDTO);
 
         return problemRepository.save(problem);
-    }
-
-    private void validateUserPermission(Problem problem, User currentUser) {
-//        boolean isAdmin = // admin check logic
-//        boolean isOwner = problem.getSubmittedByUser().getId().equals(currentUser.getId());
-//
-//        if (!isAdmin && !isOwner) {
-//            throw new BusinessException(ApplicationErrorEnum.UNAUTHORIZED_ACTION);
-//        }
     }
 
     private void handleStatusUpdate(Problem problem, ProblemDTO problemDTO, User currentUser) {
         if (problemDTO.getStatus() == null) return;
 
-        switch (problemDTO.getStatus()) {
+        ProblemStatus current = problem.getStatus();
+        ProblemStatus next = problemDTO.getStatus();
+
+
+        switch (next) {
             case APPROVED -> {
-                if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
+                if (current != ProblemStatus.PENDING_APPROVAL)
                     throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
-                }
+                if (Boolean.FALSE.equals(problem.getIsReal()))
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
                 problem.setStatus(ProblemStatus.APPROVED);
                 problem.setApprovedByUser(currentUser);
+
             }
             case REJECTED -> {
-                if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
+                if (current != ProblemStatus.PENDING_APPROVAL)
                     throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
-                }
-                if (problemDTO.getRejectionReason() == null || problemDTO.getRejectionReason().trim().isEmpty()) {
+                if (Boolean.TRUE.equals(problem.getIsReal()))
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                if (problemDTO.getRejectionReason() == null || problemDTO.getRejectionReason().trim().isEmpty())
                     throw new BusinessException(ApplicationErrorEnum.REJECTION_REASON_REQUIRED);
-                }
                 problem.setStatus(ProblemStatus.REJECTED);
                 problem.setRejectionReason(problemDTO.getRejectionReason());
                 problem.setApprovedByUser(currentUser);
             }
-            case IN_PROGRESS -> {
-                if (problem.getStatus() != ProblemStatus.APPROVED) {
-                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
-                }
-                problem.setStatus(ProblemStatus.IN_PROGRESS);
-            }
-            case RESOLVED -> {
-                if (problem.getStatus() != ProblemStatus.IN_PROGRESS) {
-                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
-                }
+            case PENDING_FUNDING ->
+                problem.setStatus(ProblemStatus.PENDING_FUNDING);
+            case PENDING_CONRIBUTIONS ->
+                problem.setStatus(ProblemStatus.PENDING_CONRIBUTIONS);
+            case WORK_IN_PROGRESS ->
+                problem.setStatus(ProblemStatus.WORK_IN_PROGRESS);
+            case RESOLVED ->
                 problem.setStatus(ProblemStatus.RESOLVED);
-            }
             default -> throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
         }
     }
 
     private void handleRealFieldsUpdate(Problem problem, ProblemDTO problemDTO) {
-        if (problem.getStatus() != ProblemStatus.PENDING_APPROVAL) {
-            throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
-        }
 
         if (problemDTO.getIsReal() != null) {
             problem.setIsReal(problemDTO.getIsReal());
+            if (Boolean.FALSE.equals(problemDTO.getIsReal())) {
+                problem.setStatus(ProblemStatus.REJECTED);
+            }
         }
         if (problemDTO.getForContribution() != null) {
             problem.setForContribution(problemDTO.getForContribution());
@@ -207,7 +200,6 @@ public class ProblemService {
         if (problemDTO.getRejectionReason() != null) {
             problem.setRejectionReason(problemDTO.getRejectionReason());
         }
-
     }
 
     private void handleDetailsUpdate(Problem problem, ProblemDTO problemDTO) {

@@ -89,4 +89,33 @@ public class SolutionService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete solution as it is being referenced by other entities");
         }
     }
+
+    @Transactional
+    public Solution updateStatus(Long id, SolutionStatus newStatus) {
+        Solution solution = findById(id);
+        SolutionStatus current = solution.getStatus();
+
+        switch (newStatus) {
+            case APPROVED -> {
+                if (current != SolutionStatus.PENDING_APPROVAL)
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                solution.setStatus(SolutionStatus.APPROVED);
+                solution.setAcceptedByUserId(userService.getCurrentUser());
+            }
+            case REJECTED -> {
+                if (current != SolutionStatus.PENDING_APPROVAL)
+                    throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+                solution.setStatus(SolutionStatus.REJECTED);
+                solution.setAcceptedByUserId(userService.getCurrentUser());
+            }
+            case PENDING_FUNDING ->
+                solution.setStatus(SolutionStatus.PENDING_FUNDING);
+            case WORK_IN_PROGRESS ->
+                solution.setStatus(SolutionStatus.WORK_IN_PROGRESS);
+            case RESOLVED ->
+                solution.setStatus(SolutionStatus.RESOLVED);
+            default -> throw new BusinessException(ApplicationErrorEnum.INVALID_PROBLEM_STATUS);
+        }
+        return solutionRepository.save(solution);
+    }
 }

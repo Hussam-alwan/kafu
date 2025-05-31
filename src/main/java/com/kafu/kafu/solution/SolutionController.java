@@ -1,6 +1,7 @@
 package com.kafu.kafu.solution;
 
 import com.kafu.kafu.solution.dto.SolutionDTO;
+import com.kafu.kafu.solution.dto.SolutionStatusUpdateDTO;
 import com.kafu.kafu.solution.dto.SolutionWithSubmitterDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -43,6 +44,11 @@ public class SolutionController {
     @PutMapping("/{id}")
     public ResponseEntity<SolutionDTO> update(@PathVariable Long problemId,@PathVariable Long id, @Valid @RequestBody SolutionDTO solutionDTO) {
         return ResponseEntity.ok(SolutionMapper.toDTO(solutionService.update(id, solutionDTO)));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<SolutionDTO> updateStatus(@PathVariable Long problemId, @PathVariable Long id, @RequestBody SolutionStatusUpdateDTO statusUpdateDTO) {
+        return ResponseEntity.ok(SolutionMapper.toDTO(solutionService.updateStatus(id, statusUpdateDTO.getStatus())));
     }
 
     @DeleteMapping("/{id}")

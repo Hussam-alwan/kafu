@@ -369,7 +369,7 @@ BEGIN
         CASE WHEN i % 5 = 2 THEN 'Duplicate entry' ELSE NULL END, -- REJECTED is at index 3 (i%5=2)
         a.id,
         pc.id,
-        (ARRAY['PENDING_APPROVAL','APPROVED','REJECTED','IN_PROGRESS','RESOLVED'])[(i % 5) + 1]
+        (ARRAY['PENDING_APPROVAL', 'APPROVED', 'REJECTED','PENDING_CONRIBUTIONS','PENDING_FUNDING','WORK_IN_PROGRESS','RESOLVED'])[(i % 7) + 1]
     FROM generate_series(1, 50) i
     JOIN Address a ON a.id = 1 + ((i-1) * 50)
     JOIN Problem_Category pc ON pc.id = 1 + ((i-1) * 50)
@@ -393,7 +393,7 @@ BEGIN
         nextval('solution_seq'),
         'الحل المقترح رقم ' || i,
         (1000 + (random() * 99000))::numeric(12,2),
-        (ARRAY['PENDING_APPROVAL','ACCEPTED','REJECTED','WORKINPROGRESS'])[(i % 4) + 1],
+        (ARRAY['PENDING_APPROVAL', 'APPROVED', 'REJECTED','PENDING_FUNDING','WORK_IN_PROGRESS','RESOLVED'])[(i % 6) + 1],
         CASE WHEN i % 4 = 1 THEN 'سعر مناسب' ELSE NULL END,
         current_date + (i || ' days')::interval,
         current_date + ((i + 7) || ' days')::interval,

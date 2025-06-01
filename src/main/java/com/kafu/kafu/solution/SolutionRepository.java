@@ -11,6 +11,7 @@ import java.util.List;
 public interface SolutionRepository extends JpaRepository<Solution, Long>, JpaSpecificationExecutor<Solution> {
     List<Solution> findByProblem_Id(Long id);
     List<Solution> findByProposedByUserId_Id(Long proposedByUserId);
+    List<Solution> findByProposedByUserId_IdAndProblem_Id(Long proposedByUserId, Long problemId);
 
     @Query("""
         SELECT new com.kafu.kafu.solution.dto.SolutionWithSubmitterDTO(

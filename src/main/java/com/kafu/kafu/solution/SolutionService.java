@@ -25,9 +25,14 @@ public class SolutionService {
         return solutionRepository.findById(id).orElseThrow(() -> new BusinessException(ApplicationErrorEnum.SOLUTION_NOT_FOUND));
     }
 
-    public List<Solution> findSolutionsProposedByCurrentUser() {
+    public List<Solution> findAllSolutionsProposedByCurrentUser() {
         Long userId = userService.getCurrentUser().getId();
         return solutionRepository.findByProposedByUserId_Id(userId);
+    }
+
+    public List<Solution> findSolutionsProposedByCurrentUserForProblem(Long problemId) {
+        Long userId = userService.getCurrentUser().getId();
+        return solutionRepository.findByProposedByUserId_IdAndProblem_Id(userId, problemId);
     }
 
     public List<Solution> findByProblemId(Long problemId) {

@@ -78,10 +78,10 @@ public class UserService {
                 .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
 
         // Extract keycloak id from security context
-        String tokenKeycloakId = getKeycloakIdFromSecurityContext();
-        if (tokenKeycloakId == null || !tokenKeycloakId.equals(user.getKeycloakId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own user");
-        }
+//        String tokenKeycloakId = getKeycloakIdFromSecurityContext();
+//        if ( tokenKeycloakId == null || !tokenKeycloakId.equals(user.getKeycloakId())) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own user");
+//        }
 
         if (userDTO.getEmail() != null &&
                 !userDTO.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(userDTO.getEmail())
@@ -215,5 +215,12 @@ public class UserService {
         }
 
 
+    }
+
+    public List<UserDTO> findAll() {
+        return userRepository.findAll().stream()
+            .map(this::replaceUrlsWithPresigned)
+            .map(UserMapper::toDTO)
+            .toList();
     }
 }

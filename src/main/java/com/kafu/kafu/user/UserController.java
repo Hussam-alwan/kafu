@@ -80,4 +80,9 @@ public class UserController {
         userService.addUserRoleIfNotExistsByUserId(userId, newRole);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
+    }
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Entity
 @Table(name = "gov")
 @Data
-public class Gov {
+public class  Gov {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -21,7 +21,7 @@ public class Gov {
     @Column(nullable = false, length = 20)
     private String phone;
 
-    @Column(name = "logo_url", length = 255)
+    @Column(name = "logo_url")
     private String logoUrl;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)

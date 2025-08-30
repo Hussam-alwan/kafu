@@ -1,4 +1,4 @@
-package com.kafu.kafu.gov;
+package com.kafu.kafu.gov.DTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

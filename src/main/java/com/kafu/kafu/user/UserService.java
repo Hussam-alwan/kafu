@@ -6,12 +6,14 @@ import com.kafu.kafu.exception.BusinessException;
 import com.kafu.kafu.gov.Gov;
 import com.kafu.kafu.gov.GovService;
 import com.kafu.kafu.s3.S3Service;
+import com.kafu.kafu.user.DTO.UserChartDataDTO;
+import com.kafu.kafu.user.DTO.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -20,8 +22,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -78,10 +80,10 @@ public class UserService {
                 .orElseThrow(() -> new BusinessException(ApplicationErrorEnum.USER_NOT_FOUND));
 
         // Extract keycloak id from security context
-//        String tokenKeycloakId = getKeycloakIdFromSecurityContext();
-//        if ( tokenKeycloakId == null || !tokenKeycloakId.equals(user.getKeycloakId())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own user");
-//        }
+        //String tokenKeycloakId = getKeycloakIdFromSecurityContext();
+        //if ( tokenKeycloakId == null || !tokenKeycloakId.equals(user.getKeycloakId())) {
+        //throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own user");
+        //}
 
         if (userDTO.getEmail() != null &&
                 !userDTO.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(userDTO.getEmail())
@@ -197,7 +199,7 @@ public class UserService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Keycloak client '" + clientId + "' does not exist in realm: " + realm);
             }
-            String clientUuid = clients.get(0).getId();
+            String clientUuid = clients.getFirst().getId();
 
             // Get current client roles
             List<RoleRepresentation> currentRoles = userResource.roles().clientLevel(clientUuid).listAll();
@@ -222,5 +224,82 @@ public class UserService {
             .map(this::replaceUrlsWithPresigned)
             .map(UserMapper::toDTO)
             .toList();
+    }
+
+    public List<UserChartDataDTO> getUserStatistics(Long userId, Integer year) {
+        // Verify user exists
+        findById(userId);
+        
+        // Get data from repositories
+        List<Object[]> problemsData = userRepository.countProblemsByMonth(userId, year);
+        List<Object[]> solutionsData = userRepository.countSolutionsByMonth(userId, year);
+        List<Object[]> donationsData = userRepository.countDonationsByMonth(userId, year);
+        
+        // Transform to DTOs
+        return createMonthlyStatistics(problemsData, solutionsData, donationsData);
+    }
+
+    private List<UserChartDataDTO> createMonthlyStatistics(
+        List<Object[]> problemsData, 
+        List<Object[]> solutionsData, 
+        List<Object[]> donationsData) {
+        
+        // Create map for each month with default values
+        Map<Integer, UserChartDataDTO> monthlyStats = getIntegerUserChartDataDTOMap();
+
+        // Fill in actual data
+        problemsData.forEach(data -> {
+            Integer month = (Integer) data[0];
+            Long count = (Long) data[1];
+            monthlyStats.get(month).setIssues(count.intValue());
+        });
+        
+        solutionsData.forEach(data -> {
+            Integer month = (Integer) data[0];
+            Long count = (Long) data[1];
+            monthlyStats.get(month).setContributions(count.intValue());
+        });
+        
+        donationsData.forEach(data -> {
+            Integer month = (Integer) data[0];
+            Long count = (Long) data[1];
+            monthlyStats.get(month).setDonations(count.intValue());
+        });
+        
+        return new ArrayList<>(monthlyStats.values());
+    }
+
+    private static Map<Integer, UserChartDataDTO> getIntegerUserChartDataDTOMap() {
+        Map<Integer, UserChartDataDTO> monthlyStats = new HashMap<>();
+        String[] months = {"January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"};
+
+        for (int i = 1; i <= 12; i++) {
+            UserChartDataDTO dto = new UserChartDataDTO();
+            dto.setMonth(months[i-1]);
+            dto.setIssues(0);
+            dto.setContributions(0);
+            dto.setDonations(0);
+            monthlyStats.put(i, dto);
+        }
+        return monthlyStats;
+    }
+
+    public UserChartDataDTO getYearlyStatistics(Long userId, Integer year) {
+        // Verify user exists
+        findById(userId);
+        
+        // Get yearly totals
+        Long totalProblems = userRepository.countProblemsByYear(userId, year);
+        Long totalSolutions = userRepository.countSolutionsByYear(userId, year);
+        Long totalDonations = userRepository.countDonationsByYear(userId, year);
+        
+        UserChartDataDTO yearlyStats = new UserChartDataDTO();
+        yearlyStats.setMonth("Total " + year);
+        yearlyStats.setIssues(totalProblems != null ? totalProblems.intValue() : 0);
+        yearlyStats.setContributions(totalSolutions != null ? totalSolutions.intValue() : 0);
+        yearlyStats.setDonations(totalDonations != null ? totalDonations.intValue() : 0);
+        
+        return yearlyStats;
     }
 }

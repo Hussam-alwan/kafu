@@ -3,6 +3,8 @@ package com.kafu.kafu.gov;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import com.kafu.kafu.gov.DTO.GovDTO;
+
 @Component
 @RequiredArgsConstructor
 public class GovMapper {

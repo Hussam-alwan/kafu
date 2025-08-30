@@ -78,7 +78,7 @@ public class ProblemPhotoService {
         return photos;
     }
     private String generatePhotoKey(Long problemId) {
-        return String.format("problems/%d/photo/%s", problemId, UUID.randomUUID().toString());
+        return String.format("problems/%d/photo/%s", problemId, UUID.randomUUID());
     }
 
     @Transactional

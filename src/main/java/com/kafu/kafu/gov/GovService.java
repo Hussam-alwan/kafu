@@ -4,6 +4,8 @@ import com.kafu.kafu.address.Address;
 import com.kafu.kafu.address.AddressService;
 import com.kafu.kafu.exception.ApplicationErrorEnum;
 import com.kafu.kafu.exception.BusinessException;
+import com.kafu.kafu.gov.DTO.GovChartDTO;
+import com.kafu.kafu.gov.DTO.GovDTO;
 import com.kafu.kafu.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -125,7 +130,7 @@ public class GovService {
     }
 
     private String generateProfilePhotoKey(Long govId) {
-        return String.format("govs/%d/logo/%s", govId, UUID.randomUUID().toString());
+        return String.format("govs/%d/logo/%s", govId, UUID.randomUUID());
     }
 
     private boolean isValidPhotoContentType(String contentType) {
@@ -141,5 +146,85 @@ public class GovService {
         if (gov.getLogoUrl() != null)
             gov.setLogoUrl(s3Service.generatePresignedGetUrl(gov.getLogoUrl()));
         return gov;
+    }
+
+    // get the chart data for the current gov and year
+    //hussam
+
+    public List<GovChartDTO> getGovStatistics(Long govId, Integer year) {
+        // Verify gov exists
+        findById(govId);
+        
+        // Get data from repositories
+        List<Object[]> receivedProblemsData = govRepository.countReceivedProblemsByMonth(govId, year);
+        List<Object[]> completedProblemsData = govRepository.countCompletedProblemsByMonth(govId, year);
+        List<Object[]> auctionsData = govRepository.countAuctionsByMonth(govId, year);
+        
+        // Transform to DTOs
+        return createMonthlyStatistics(receivedProblemsData, completedProblemsData, auctionsData);
+    }
+
+    public GovChartDTO getYearlyStatistics(Long govId, Integer year) {
+        // Verify gov exists
+        findById(govId);
+        
+        // Get yearly totals
+        Long totalReceived = govRepository.countReceivedProblemsByYear(govId, year);
+        Long totalCompleted = govRepository.countCompletedProblemsByYear(govId, year);
+        Long totalAuctions = govRepository.countAuctionsByYear(govId, year);
+        
+        GovChartDTO yearlyStats = new GovChartDTO();
+        yearlyStats.setMonth("Total " + year);
+        yearlyStats.setReceivedProblems(totalReceived != null ? totalReceived.intValue() : 0);
+        yearlyStats.setCompletedProblems(totalCompleted != null ? totalCompleted.intValue() : 0);
+        yearlyStats.setAuctionedProblmes(totalAuctions != null ? totalAuctions.intValue() : 0);
+        
+        return yearlyStats;
+    }
+
+    private List<GovChartDTO> createMonthlyStatistics(
+        List<Object[]> receivedProblemsData, 
+        List<Object[]> completedProblemsData, 
+        List<Object[]> auctionsData) {
+        
+        // Create map for each month with default values
+        Map<Integer, GovChartDTO> monthlyStats = getIntegerGovChartDTOMap();
+
+        // Fill in actual data
+        receivedProblemsData.forEach(data -> {
+            Integer month = (Integer) data[0];
+            Long count = (Long) data[1];
+            monthlyStats.get(month).setReceivedProblems(count.intValue());
+        });
+        
+        completedProblemsData.forEach(data -> {
+            Integer month = (Integer) data[0];
+            Long count = (Long) data[1];
+            monthlyStats.get(month).setCompletedProblems(count.intValue());
+        });
+        
+        auctionsData.forEach(data -> {
+            Integer month = (Integer) data[0];
+            Long count = (Long) data[1];
+            monthlyStats.get(month).setAuctionedProblmes(count.intValue());
+        });
+        
+        return new ArrayList<>(monthlyStats.values());
+    }
+
+    private static Map<Integer, GovChartDTO> getIntegerGovChartDTOMap() {
+        Map<Integer, GovChartDTO> monthlyStats = new HashMap<>();
+        String[] months = {"January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"};
+
+        for (int i = 1; i <= 12; i++) {
+            GovChartDTO dto = new GovChartDTO();
+            dto.setMonth(months[i-1]);
+            dto.setReceivedProblems(0);
+            dto.setCompletedProblems(0);
+            dto.setAuctionedProblmes(0);
+            monthlyStats.put(i, dto);
+        }
+        return monthlyStats;
     }
 }

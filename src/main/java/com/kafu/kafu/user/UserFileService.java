@@ -45,11 +45,11 @@ public class UserFileService {
     }
 
     private String generateProfilePhotoKey(Long userId) {
-        return String.format("users/%d/profile-photo/%s", userId, UUID.randomUUID().toString());
+        return String.format("users/%d/profile-photo/%s", userId, UUID.randomUUID());
     }
 
     private String generateCVKey(Long userId) {
-        return String.format("users/%d/cv/%s", userId, UUID.randomUUID().toString());
+        return String.format("users/%d/cv/%s", userId, UUID.randomUUID());
     }
 
     private boolean isValidCVContentType(String contentType) {

@@ -1,4 +1,4 @@
-package com.kafu.kafu.user;
+package com.kafu.kafu.user.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;

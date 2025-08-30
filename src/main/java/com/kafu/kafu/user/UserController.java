@@ -3,18 +3,25 @@ package com.kafu.kafu.user;
 import com.kafu.kafu.donation.DonationDTO;
 import com.kafu.kafu.donation.DonationMapper;
 import com.kafu.kafu.donation.DonationService;
+import com.kafu.kafu.user.DTO.UserChartDataDTO;
+import com.kafu.kafu.user.DTO.UserDTO;
+
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final UserService   userService;
     private final UserFileService userFileService;
     private final DonationService donationService;
 
@@ -84,5 +91,33 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDTO>> findAll() {
         return ResponseEntity.ok(userService.findAll());
+    }
+
+    // get the chart data for the current user
+    @GetMapping("/{userId}/statistics")
+    public ResponseEntity<List<UserChartDataDTO>> getUserStatistics(
+        @PathVariable Long userId,
+        @RequestParam Integer year) {
+    
+        List<UserChartDataDTO> statistics = userService.getUserStatistics(userId, year);
+        return ResponseEntity.ok(statistics);
+    }
+    
+    @GetMapping("/me/roles")
+    public ResponseEntity<List<String>> getCurrentUserRoles() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(roles);
+    }
+
+    @GetMapping("/{userId}/statistics/yearly")
+    public ResponseEntity<UserChartDataDTO> getYearlyStatistics(
+        @PathVariable Long userId,
+        @RequestParam Integer year) {
+
+        UserChartDataDTO yearlyStats = userService.getYearlyStatistics(userId, year);
+        return ResponseEntity.ok(yearlyStats);
     }
 }

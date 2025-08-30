@@ -62,7 +62,7 @@ public class StripeService implements PaymentService {
                 .setIdempotencyKey(request.getIdempotencyKey())
                 .build();
 
-        Session session = null;
+        Session session;
         try {
             session = Session.create(params, options);
         } catch (StripeException e) {
@@ -76,7 +76,7 @@ public class StripeService implements PaymentService {
     @Transactional
     public WebhookEvent getEvent(String payload, Map<String, String> headers) {
 
-        Event event = null;
+        Event event;
         try {
             event = Webhook.constructEvent(payload, headers.get("Stripe-Signature"), stripeEndpointSecret);
         } catch (SignatureVerificationException e) {
@@ -85,7 +85,7 @@ public class StripeService implements PaymentService {
 
         // Extract relevant data based on event type
         if ("checkout.session.completed".equals(event.getType())) {
-            Session session = null;
+            Session session;
             try {
                 session = (Session) event.getDataObjectDeserializer().getObject().orElseThrow(
                         () -> new IllegalStateException("Failed to get Stripe Session")
@@ -96,7 +96,7 @@ public class StripeService implements PaymentService {
             return new WebhookEvent(session.getId(),DonationStatus.SUCCESS);
         }
         else if ("charge.failed".equals(event.getType())) {
-            Charge charge = null;
+            Charge charge;
             try {
                 charge = (Charge) event.getDataObjectDeserializer().getObject().orElseThrow(
                         () -> new IllegalStateException("Failed to get Stripe Session")

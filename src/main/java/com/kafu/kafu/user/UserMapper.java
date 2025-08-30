@@ -3,6 +3,8 @@ package com.kafu.kafu.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import com.kafu.kafu.user.DTO.UserDTO;
+
 @Component
 @RequiredArgsConstructor
 public class UserMapper {

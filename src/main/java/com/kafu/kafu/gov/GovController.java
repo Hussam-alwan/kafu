@@ -4,6 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.kafu.kafu.gov.DTO.GovChartDTO;
+import com.kafu.kafu.gov.DTO.GovDTO;
+
 import java.net.URI;
 import java.util.List;
 
@@ -55,5 +59,21 @@ public class GovController {
             @RequestParam String contentType) {
         return ResponseEntity.ok(govService.uploadLogo(id, contentType));
     }
+
+    @GetMapping("/{govId}/statistics")
+    public ResponseEntity<List<GovChartDTO>> getGovStatistics(
+        @PathVariable Long govId,
+        @RequestParam(defaultValue = "2024") Integer year){
+            List<GovChartDTO> statistics = govService.getGovStatistics(govId, year);
+            return ResponseEntity.ok(statistics);
+        }
+
+    @GetMapping("/{govId}/statistics/yearly")
+    public ResponseEntity<GovChartDTO> getYearlyStatistics(
+        @PathVariable Long govId,
+        @RequestParam(defaultValue = "2024") Integer year){
+            GovChartDTO yearlyStats = govService.getYearlyStatistics(govId, year);
+            return ResponseEntity.ok(yearlyStats);
+        }
 
 }

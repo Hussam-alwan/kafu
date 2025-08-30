@@ -21,7 +21,7 @@ public class JwtConfig {
                 return Collections.emptyList();
             }
             return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority(role))
+                    .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
         });
 

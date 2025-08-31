@@ -14,6 +14,7 @@ public class ProblemSearchCriteria {
     private String searchText;
     private Boolean forContribution;
     private Boolean forDonation;
+    private Boolean isReal;
     private City city;
     private ProblemStatus status;
 

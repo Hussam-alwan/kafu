@@ -29,6 +29,11 @@ public class ProblemSpecification {
                 predicate = cb.and(predicate, cb.equal(root.get("forDonation"), criteria.getForDonation()));
             }
 
+            // Add isReal filter
+            if (criteria.getIsReal() != null) {
+                predicate = cb.and(predicate, cb.equal(root.get("isReal"), criteria.getIsReal()));
+            }
+
             if (criteria.getCity() != null) {
                 Join<Object, Object> addressJoin = root.join("address");
                 predicate = cb.and(predicate, cb.equal(addressJoin.get("city"), criteria.getCity()));

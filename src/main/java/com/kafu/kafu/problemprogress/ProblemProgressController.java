@@ -36,4 +36,10 @@ public class ProblemProgressController {
         problemProgressService.deleteByIdAndProblemId(id, problemId);
         return ResponseEntity.ok().build();
     }
+    @PutMapping("/problem_progress")
+    public ResponseEntity<ProblemProgressDTO> update(
+            @PathVariable Long problemId,
+            @Valid @RequestBody ProblemProgressDTO progressDTO) {
+        return ResponseEntity.ok(ProblemProgressMapper.toDTO(problemProgressService.update(problemId, progressDTO)));
+    }
 }

@@ -79,4 +79,18 @@ public class ProblemProgressService {
     public void delete(Long id) {
         problemProgressRepository.deleteById(id);
     }
+
+    @Transactional
+    public ProblemProgress update(Long problemId, ProblemProgressDTO dto) {
+        ProblemProgress progress = findByIdAndValidateProblem(dto.getId(), problemId);
+        progress.setPercentage(dto.getPercentage());
+        progress.setComment(dto.getComment());
+        progress.setProgressDate(LocalDateTime.now());
+        if(dto.getPercentage() == 100)
+            problemService.patch(
+                    problemId,
+                    ProblemDTO.builder().status(ProblemStatus.RESOLVED).build()
+            );
+        return problemProgressRepository.save(progress);
+    }
 }
